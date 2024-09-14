@@ -32,7 +32,7 @@ class _InventoryPage extends State<Inventory> {
       'assets/Card-2.png',
       'assets/Tamagotchi-2.png',
     ];
-    return images[index % images.length]; 
+    return images[index % images.length];
   }
 
   @override
@@ -50,8 +50,12 @@ class _InventoryPage extends State<Inventory> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ElevatedButton(
-                onPressed: () async{
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ChatBot(),));
+                onPressed: () async {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ChatBot(),
+                      ));
                 },
                 child: const Text('ChatBot'),
               ),
@@ -76,22 +80,24 @@ class _InventoryPage extends State<Inventory> {
       floatingActionButton: _isPanelVisible
           ? null // Hide FAB when the panel is visible
           : FloatingActionButton(
-        onPressed: () async {
-          // Navigate to the camera page when clicked
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const Camera(),
+              onPressed: () async {
+                // Navigate to the camera page when clicked
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Camera(),
+                  ),
+                );
+              },
+              child: Image.asset('assets/PlusButton.png'),
+              elevation: 0, // Remove shadow
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                    30), // Adjust the border radius if needed
+              ),
+              backgroundColor: Colors
+                  .transparent, // Make background transparent to remove border effect
             ),
-          );
-        },
-        child: Image.asset('assets/PlusButton.png'),
-        elevation: 0, // Remove shadow
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30), // Adjust the border radius if needed
-        ),
-        backgroundColor: Colors.transparent, // Make background transparent to remove border effect
-      ),
     );
   }
 
@@ -100,22 +106,25 @@ class _InventoryPage extends State<Inventory> {
       children: [
         Positioned.fill(
           child: Image.asset(
-            'assets/fridgeBg.png', 
-            fit: BoxFit.cover, 
+            'assets/fridgeBg.png',
+            fit: BoxFit.cover,
           ),
         ),
         Container(
           child: SafeArea(
             child: Column(
               children: [
-                SizedBox(height: 65,),
+                SizedBox(
+                  height: 65,
+                ),
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(10),
-                    itemCount: (_inventoryManager.inventoryItems.length / 3).ceil(),
+                    itemCount: (_inventoryManager.getItemCount() / 3).ceil(),
                     itemBuilder: (context, rowIndex) {
                       int startIndex = rowIndex * 3;
-                      int endIndex = min(startIndex + 3, _inventoryManager.inventoryItems.length);
+                      int endIndex =
+                          min(startIndex + 3, _inventoryManager.getItemCount());
 
                       return Column(
                         children: [
@@ -133,7 +142,7 @@ class _InventoryPage extends State<Inventory> {
                           // fridge divider, replace with fridge bar image later
                           Divider(
                             color: Colors.grey,
-                            thickness: 2, 
+                            thickness: 2,
                           ),
                         ],
                       );
@@ -153,28 +162,29 @@ class _InventoryPage extends State<Inventory> {
       child: Column(
         children: [
           Stack(
-            alignment: Alignment.center, 
+            alignment: Alignment.center,
             children: [
               IconButton(
                 icon: Image.asset(
                   _getRandomImage(index),
                   width: 100,
-                  height: 100, 
-                  fit: BoxFit.contain, 
+                  height: 100,
+                  fit: BoxFit.contain,
                 ),
-                iconSize: 100, 
+                iconSize: 100,
                 onPressed: () {
                   setState(() {
-                    value = _inventoryManager.inventoryItems[index]; 
+                    value = _inventoryManager.getItemNameByIndex(index);
                   });
-                  _pc.open(); 
+                  _pc.open();
                 },
               ),
               // Text aligned to the center of the IconButton
               Positioned(
-                bottom: 22, // Adjust this to control the vertical position of the text
+                bottom:
+                    22, // Adjust this to control the vertical position of the text
                 child: Text(
-                  _inventoryManager.inventoryItems[index],
+                  _inventoryManager.getItemNameByIndex(index),
                   style: const TextStyle(
                     fontSize: 15, // Adjust the font size as needed
                     color: Colors.white, // Set the text color

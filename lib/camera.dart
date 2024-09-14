@@ -62,7 +62,9 @@ Future<List<Nutrient>> createPopulatedNutrients(String payload) async {
   );
 
   if (response.statusCode == 200) {
-    return List<Nutrient>.from(jsonDecode(jsonDecode(response.body)['response']['text']).map((x) => Nutrient.fromJson(x)));
+    return List<Nutrient>.from(
+        jsonDecode(jsonDecode(response.body)['response']['text'])
+            .map((x) => Nutrient.fromJson(x)));
   } else {
     print(response.body);
     throw Exception('Failed to create product');
@@ -81,14 +83,14 @@ Future<List<Ingredient>> createPopulatedIngredients(String payload) async {
   );
 
   if (response.statusCode == 200) {
-    return List<Ingredient>.from(jsonDecode(jsonDecode(response.body)['response']['text']).map((x) => Ingredient.fromJson(x)));
+    return List<Ingredient>.from(
+        jsonDecode(jsonDecode(response.body)['response']['text'])
+            .map((x) => Ingredient.fromJson(x)));
   } else {
     print(response.body);
     throw Exception('Failed to create product');
   }
 }
-
-
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -101,7 +103,8 @@ class _CameraState extends State<Camera> {
   late TextRecognizer textRecognizer;
   late ImagePicker imagePicker;
   Meta meta = Meta(name: "", description: "");
-  Product product = Product(name: "", description: "", nutrients: [], ingredients: []);
+  Product product =
+      Product(name: "", description: "", nutrients: [], ingredients: []);
   String recognizedText = "";
   String recognizedNutrientText = "";
   String recognizedIngredientText = "";
@@ -116,7 +119,7 @@ class _CameraState extends State<Camera> {
 
   bool isRecognizing = false;
   int currentStep =
-      0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Meta picture)
+      0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Product picture)
 
   @override
   void initState() {
@@ -167,7 +170,11 @@ class _CameraState extends State<Camera> {
             createPopulatedNutrients(recognizedNutrientText),
             createPopulatedIngredients(recognizedText)
           ]);
-          Product p = Product(name: meta.name, description: meta.description, nutrients: results[0] as List<Nutrient>, ingredients: results[1] as List<Ingredient>);
+          Product p = Product(
+              name: meta.name,
+              description: meta.description,
+              nutrients: results[0] as List<Nutrient>,
+              ingredients: results[1] as List<Ingredient>);
           setState(() {
             product = p;
           });
@@ -234,7 +241,7 @@ class _CameraState extends State<Camera> {
     // Add new item to inventory and navigate to Inventory page
     if (productName != null && productName.isNotEmpty) {
       final inventoryManager = InventoryManager();
-      inventoryManager.addItem(productName);
+      inventoryManager.addItem(productName, {});
 
       Navigator.pushReplacement(
         context,
