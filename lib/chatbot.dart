@@ -5,15 +5,14 @@ import 'package:http/http.dart' as http; // Import the http package
 
 class chatResponse {
   String message;
+
   chatResponse({
     required this.message,
   });
 
   factory chatResponse.fromJson(Map<String, dynamic> json) {
     dynamic response = json['response']['text'];
-    return chatResponse(
-        message: response
-    );
+    return chatResponse(message: response);
   }
 
   // Convert Meta to JSON
@@ -59,20 +58,20 @@ class _ChatBot extends State<ChatBot> {
     super.initState();
     if (widget.prompt != null) {
       _controller.clear();
-    setState(() {
-      _messages.add('You: ${widget.prompt}');
-    });
+      setState(() {
+        _messages.add('You: ${widget.prompt}');
+      });
 
-    try {
-      chatResponse response = await createChatResponse(widget.prompt!);
-      setState(() {
-        _messages.add('Bot: ${response.message}');
-      });
-    } catch (e) {
-      setState(() {
-        _messages.add('Bot: Error occurred');
-      });
-    }
+      try {
+        chatResponse response = await createChatResponse(widget.prompt!);
+        setState(() {
+          _messages.add('Bot: ${response.message}');
+        });
+      } catch (e) {
+        setState(() {
+          _messages.add('Bot: Error occurred');
+        });
+      }
     }
   }
 
@@ -95,7 +94,8 @@ class _ChatBot extends State<ChatBot> {
   }
 
   void _backToInventory() {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Inventory()));
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => Inventory()));
   }
 
   @override
@@ -146,8 +146,7 @@ class _ChatBot extends State<ChatBot> {
                     icon: Icon(Icons.send),
                     onPressed: () {
                       _handleSubmitted(_controller.text);
-                    }
-                ),
+                    }),
               ],
             ),
           ),

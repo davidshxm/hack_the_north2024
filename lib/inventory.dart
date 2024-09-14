@@ -14,6 +14,7 @@ class Inventory extends StatefulWidget {
 
 class _InventoryPage extends State<Inventory> {
   bool _isPanelVisible = false;
+  bool isNull = true;
   final InventoryManager _inventoryManager = InventoryManager();
   PanelController _pc = PanelController();
   int Index = -1;
@@ -57,9 +58,50 @@ class _InventoryPage extends State<Inventory> {
                 },
                 child: const Text('ChatBot'),
               ),
-              Text(
-                _inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['description'] ?? "",
-              )
+              ElevatedButton(
+                onPressed: (){
+                  Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => ChatBot()));
+                },
+                child: Text(_inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['name'] ?? "",),
+              ),
+              ElevatedButton(
+                onPressed: (){
+                  Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => ChatBot()));
+                },
+                child: Text(_inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['description'] ?? "",),
+              ),
+              ElevatedButton(
+                onPressed: (){
+                  Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => ChatBot()));
+                },
+                child: Text(_inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['weight'] ?? "",),
+              ),
+              Column(
+                children: [
+                  if(!isNull)
+                  for (int index = 0; index < _inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['nutrition'].length; index++)
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                            context, MaterialPageRoute(builder: (context) => ChatBot()));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
+                        children: [
+                          Text(_inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(index))['nutrition']['name'],
+                            style: TextStyle(fontWeight: FontWeight.bold), // Nutrient name
+                          ),
+                          SizedBox(height: 5), // Space between lines
+                          Text(_inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(index))['nutrition']['value'], // Nutrient description
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
             ],
           ),
         ),
@@ -172,6 +214,7 @@ class _InventoryPage extends State<Inventory> {
                 iconSize: 100,
                 onPressed: () {
                   setState(() {
+                    isNull = false;
                     Index = index;
                   });
                   _pc.open();
