@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'inventory.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
@@ -252,6 +253,12 @@ class _CameraState extends State<Camera> {
       appBar: AppBar(
         title: const Text('ML Text Recognition'),
       ),
+      body: Column(
+        children: [
+          IconButton(onPressed: () async{
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Inventory(),));
+          }, icon: Icon(Icons.login))
+        ],
       body: SafeArea(
         child: Center(
           child: Column(
