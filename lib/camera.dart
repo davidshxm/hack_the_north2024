@@ -216,12 +216,12 @@ class _CameraState extends State<Camera> {
     final productName = await showDialog<String>(
       context: context,
       builder: (context) {
-        String name = '';
+        String name = product.name;
         return AlertDialog(
           title: const Text('Enter Product Name'),
           content: TextField(
             autofocus: true,
-            decoration: const InputDecoration(hintText: 'Product Name'),
+            decoration: InputDecoration(hintText: product.name),
             onChanged: (value) => name = value,
           ),
           actions: [
