@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'chatbot.dart';
 
 class Details extends StatefulWidget {
+  const Details({super.key});
+
   @override
   State<StatefulWidget> createState() => _Details();
 }
@@ -14,13 +16,13 @@ class _Details extends State<Details> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text('Details'),
+        title: const Text('Details'),
       ),
       body: Column(
         children: [
           IconButton(onPressed: () async{
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ChatBot(),));
-          }, icon: Icon(Icons.login))
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ChatBot(),));
+          }, icon: const Icon(Icons.login))
         ],
       ),
     );

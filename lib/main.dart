@@ -9,7 +9,6 @@ void main() {
 class ScanBite extends StatelessWidget {
   const ScanBite({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,7 +18,7 @@ class ScanBite extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Inventory(),
+      home: const Inventory(),
     );
   }
 }
