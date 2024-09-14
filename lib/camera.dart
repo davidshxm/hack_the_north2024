@@ -171,8 +171,13 @@ class _CameraState extends State<Camera> {
           });
           CleanData product = await futureCleanData!;
           print(product.weight);
-          List<Nutrient> nutrients = await createPopulatedNutrients(jsonEncode(product.nutrients.map((e) => e.toJson()).toList()));
-          List<Ingredient> ingredients = await createPopulatedIngredients(jsonEncode(product.ingredients));
+          final results = await Future.wait([
+            createPopulatedNutrients(jsonEncode(product.nutrients.map((e) => e.toJson()).toList())),
+            createPopulatedIngredients(jsonEncode(product.ingredients))
+          ]);
+
+          List<Nutrient> nutrients = results[0] as List<Nutrient>;
+          List<Ingredient> ingredients = results[1] as List<Ingredient>;
           print(nutrients);
           print(ingredients);
           break;
