@@ -18,7 +18,7 @@ class _InventoryPage extends State<Inventory> {
   bool _isPanelVisible = false;
   final InventoryManager _inventoryManager = InventoryManager();
   PanelController _pc = PanelController();
-  String value = ''; // Initially set to an empty string
+  int Index = 0;
 
   @override
   void initState() {
@@ -59,9 +59,9 @@ class _InventoryPage extends State<Inventory> {
                 },
                 child: const Text('ChatBot'),
               ),
-              value.isNotEmpty && _inventoryManager.test[value] != null
-                  ? Text(_inventoryManager.test[value]!)
-                  : const Text('Please select an item.'),
+              Text(
+                _inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['description'],
+              )
             ],
           ),
         ),
@@ -174,7 +174,7 @@ class _InventoryPage extends State<Inventory> {
                 iconSize: 100,
                 onPressed: () {
                   setState(() {
-                    value = _inventoryManager.getItemNameByIndex(index);
+                    Index = index;
                   });
                   _pc.open();
                 },
@@ -189,6 +189,7 @@ class _InventoryPage extends State<Inventory> {
                     fontSize: 15, // Adjust the font size as needed
                     color: Colors.white, // Set the text color
                     fontWeight: FontWeight.bold, // Make the text bold
+                    fontFamily: 'PixelifySans'
                   ),
                   textAlign: TextAlign.center, // Aligns the text to center
                 ),

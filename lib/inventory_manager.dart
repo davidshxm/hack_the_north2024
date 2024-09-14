@@ -5,9 +5,9 @@ import 'dart:convert';
 
 class InventoryManager {
   InventoryManager._privateConstructor() {
-    String JSON = "";
-    _inventoryList.readInventory().then((value) => (JSON = value));
-    _inventoryMap.addAll(jsonDecode(JSON));
+    // String JSON = "";
+    // _inventoryList.readInventory().then((value) => (JSON = value));
+    // _inventoryMap.addAll(jsonDecode(JSON));
   }
 
   static final InventoryManager _instance =
@@ -15,7 +15,13 @@ class InventoryManager {
 
   static final InventoryStorage _inventoryList = InventoryStorage();
 
-  final Map<String, dynamic> _inventoryMap = {};
+  final Map<String, dynamic> _inventoryMap = {
+    "Lay's Ketchup Chips":{
+  "name": "Lay's Ketchup Chips",
+  "description": "Lorem ipsum dolor sit amet.",
+  "weight": "28 g"
+}
+  };
 
   factory InventoryManager() {
     return _instance;
