@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'camera.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Inventory extends StatefulWidget {
   Inventory({Key? key}) : super(key: key);
@@ -10,24 +9,52 @@ class Inventory extends StatefulWidget {
 }
 
 class _InventoryPage extends State<Inventory> {
+  PanelController _pc = new PanelController();
+  bool _isPanelVisible = false;
+
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        title: Text('Inventory'),
+        title: Text("SlidingUpPanelExample"),
       ),
-      body: Column(
-        children: [
-          IconButton(onPressed: () async{
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Camera(),));
-          }, icon: Icon(Icons.login))
+      body: SlidingUpPanel(
+        renderPanelSheet: _isPanelVisible,
+        backdropEnabled: true,
+        controller: _pc,
+        panel: Center(
+          child: Text("This is the sliding Widget"),
+        ),
+        body: _body(),
+        onPanelOpened: () {
+          setState(() {
+            _isPanelVisible = true;  // Set to true when the panel is opened
+          });
+        },
+        onPanelClosed: () {
+          setState(() {
+            _isPanelVisible = false;  // Set to false when the panel is closed
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _body() {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Row(children: [
+            ElevatedButton(
+              onPressed: () => _pc.open(),
+              child: Text("Open"),
+            ),
+          ]),
         ],
       ),
     );

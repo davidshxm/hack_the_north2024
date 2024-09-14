@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'inventory.dart';
 
-import 'details.dart';
 
 class Camera extends StatefulWidget {
   @override
@@ -19,7 +19,7 @@ class _Camera extends State<Camera> {
       body: Column(
         children: [
           IconButton(onPressed: () async{
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Details(),));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Inventory(),));
           }, icon: Icon(Icons.login))
         ],
       ),

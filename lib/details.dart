@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'chatbot.dart';
-
 class Details extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _Details();
@@ -16,12 +14,13 @@ class _Details extends State<Details> {
         backgroundColor: Colors.transparent,
         title: Text('Details'),
       ),
-      body: Column(
-        children: [
-          IconButton(onPressed: () async{
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ChatBot(),));
-          }, icon: Icon(Icons.login))
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            for(int i = 0; i < 100; i++)
+              Text("Hello World"),
+          ],
+        ),
       ),
     );
   }
