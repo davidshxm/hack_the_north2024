@@ -18,11 +18,17 @@ class _CameraState extends State<Camera> {
   late ImagePicker imagePicker;
   String recognizedText = "";
 
-  List<String?> pickedImagePaths = List.filled(3, null); // Store images for each step
-  List<bool> stepsCompleted = [false, false, false]; // Tracks whether each step is done or skipped
+  List<String?> pickedImagePaths =
+      List.filled(3, null); // Store images for each step
+  List<bool> stepsCompleted = [
+    false,
+    false,
+    false
+  ]; // Tracks whether each step is done or skipped
 
   bool isRecognizing = false;
-  int currentStep = 0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Product picture)
+  int currentStep =
+      0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Product picture)
 
   @override
   void initState() {
@@ -116,7 +122,7 @@ class _CameraState extends State<Camera> {
     // Add new item to inventory and navigate to Inventory page
     if (productName != null && productName.isNotEmpty) {
       final inventoryManager = InventoryManager();
-      inventoryManager.addItem(productName);
+      inventoryManager.addItem(productName, {});
 
       Navigator.pushReplacement(
         context,
@@ -181,10 +187,11 @@ class _CameraState extends State<Camera> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              if (pickedImagePaths[currentStep] != null) 
+              if (pickedImagePaths[currentStep] != null)
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: ImagePreview(imagePath: pickedImagePaths[currentStep]!),
+                  child:
+                      ImagePreview(imagePath: pickedImagePaths[currentStep]!),
                 )
               else
                 Padding(
@@ -229,7 +236,8 @@ class _CameraState extends State<Camera> {
               if (!isRecognizing && recognizedText.isNotEmpty) ...[
                 const Divider(),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                  padding:
+                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
