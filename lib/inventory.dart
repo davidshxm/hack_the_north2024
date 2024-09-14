@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -142,7 +143,7 @@ class _InventoryPage extends State<Inventory> {
             children: [
               IconButton(
                 icon: Image.asset(
-                  _getRandomImage(),
+                  _getRandomImage(index),
                   width: 100,
                   height: 100, 
                   fit: BoxFit.contain, 
