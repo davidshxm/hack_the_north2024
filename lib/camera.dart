@@ -102,9 +102,9 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   late TextRecognizer textRecognizer;
   late ImagePicker imagePicker;
-  Meta meta = Meta(name: "", description: "");
+  Meta meta = Meta(label: "", name: "", description: "");
   Product product =
-      Product(name: "", description: "", nutrients: [], ingredients: []);
+      Product(label: "", name: "", description: "", nutrients: [], ingredients: []);
   String recognizedText = "";
   String recognizedNutrientText = "";
   String recognizedIngredientText = "";
@@ -171,6 +171,7 @@ class _CameraState extends State<Camera> {
             createPopulatedIngredients(recognizedText)
           ]);
           Product p = Product(
+              label: meta.label,
               name: meta.name,
               description: meta.description,
               nutrients: results[0] as List<Nutrient>,
@@ -216,12 +217,12 @@ class _CameraState extends State<Camera> {
     final productName = await showDialog<String>(
       context: context,
       builder: (context) {
-        String name = '';
+        String name = product.name;
         return AlertDialog(
           title: const Text('Enter Product Name'),
           content: TextField(
             autofocus: true,
-            decoration: const InputDecoration(hintText: 'Product Name'),
+            decoration: InputDecoration(hintText: product.name),
             onChanged: (value) => name = value,
           ),
           actions: [

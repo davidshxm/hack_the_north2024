@@ -23,6 +23,7 @@ class _InventoryPage extends State<Inventory> {
   void initState() {
     super.initState();
   }
+  
 
   // Function to select a random image
   String _getRandomImage(int index) {
@@ -36,6 +37,7 @@ class _InventoryPage extends State<Inventory> {
 
   @override
   Widget build(BuildContext context) {
+    print(_inventoryManager.getItemCount());
     return Scaffold(
       appBar: AppBar(
         title: Text("SlidingUpPanelExample"),
@@ -120,12 +122,12 @@ class _InventoryPage extends State<Inventory> {
       floatingActionButton: _isPanelVisible
           ? null // Hide FAB when the panel is visible
           : FloatingActionButton(
-              onPressed: () async {
+              onPressed: () {
                 // Navigate to the camera page when clicked
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Camera(),
+                    builder: (context) => Camera(),
                   ),
                 );
               },
@@ -207,8 +209,8 @@ class _InventoryPage extends State<Inventory> {
               IconButton(
                 icon: Image.asset(
                   _getRandomImage(index),
-                  width: 100,
-                  height: 100,
+                  width: 120,
+                  height: 120,
                   fit: BoxFit.contain,
                 ),
                 iconSize: 100,
@@ -225,7 +227,7 @@ class _InventoryPage extends State<Inventory> {
                 bottom:
                     22, // Adjust this to control the vertical position of the text
                 child: Text(
-                  _inventoryManager.getItemNameByIndex(index),
+                  _inventoryManager.getItemLabelByIndex(index),
                   style: const TextStyle(
                       fontSize: 15, // Adjust the font size as needed
                       color: Colors.white, // Set the text color

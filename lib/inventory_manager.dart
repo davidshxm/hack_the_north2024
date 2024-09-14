@@ -21,6 +21,11 @@ class InventoryManager {
     return _instance;
   }
 
+  void removeItem(String item) {
+    _inventoryMap.remove(item);
+    _inventoryList.writeInventory(jsonEncode(_inventoryMap));
+  }
+
   void addItem(String item, Map<String, dynamic> entry) {
     _inventoryMap[item] = entry;
     _inventoryList.writeInventory(jsonEncode(_inventoryMap));
@@ -37,6 +42,13 @@ class InventoryManager {
     return _inventoryMap.keys.toList()[index];
   }
 
+  String getItemLabelByIndex(int index) {
+    if (index < 0 || index >= _inventoryMap.length) {
+      return "";
+    }
+    return _inventoryMap[_inventoryMap.keys.toList()[index]]['label'];
+  }
+
   Map<String, dynamic> getEntryByName(String name) {
     if (!_inventoryMap.containsKey(name)) {
       return {};
@@ -48,7 +60,7 @@ class InventoryManager {
 // Adapted from Flutter documentation
 class InventoryStorage {
   Future<String> get _localPath async {
-    final directory = await getLibraryDirectory();
+    final directory = await getApplicationSupportDirectory();
 
     return directory.path;
   }
