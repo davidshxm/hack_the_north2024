@@ -5,12 +5,9 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:image_picker/image_picker.dart';
 import 'image_preview.dart';
 import 'inventory_manager.dart';
-import 'inventory.dart';
 import 'byte.dart';
 import 'dart:convert'; // For decoding JSON
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 
 Future<Meta> createMeta(String payload) async {
   final response = await http.post(
@@ -43,7 +40,8 @@ Future<CleanData> createCleanData(String payload) async {
   );
 
   if (response.statusCode == 200) {
-    return CleanData.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return CleanData.fromJson(
+        jsonDecode(response.body) as Map<String, dynamic>);
   } else {
     print(payload);
     print(response.statusCode);
@@ -51,7 +49,6 @@ Future<CleanData> createCleanData(String payload) async {
     throw Exception(response.body);
   }
 }
-
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -69,11 +66,17 @@ class _CameraState extends State<Camera> {
   String recognizedNutrientText = "";
   String recognizedIngredientText = "";
 
-  List<String?> pickedImagePaths = List.filled(3, null); // Store images for each step
-  List<bool> stepsCompleted = [false, false, false]; // Tracks whether each step is done or skipped
+  List<String?> pickedImagePaths =
+      List.filled(3, null); // Store images for each step
+  List<bool> stepsCompleted = [
+    false,
+    false,
+    false
+  ]; // Tracks whether each step is done or skipped
 
   bool isRecognizing = false;
-  int currentStep = 0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Meta picture)
+  int currentStep =
+      0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Meta picture)
 
   @override
   void initState() {
@@ -123,7 +126,8 @@ class _CameraState extends State<Camera> {
           break;
         case 2:
           setState(() {
-            futureCleanData = createCleanData(recognizedNutrientText + recognizedText);
+            futureCleanData =
+                createCleanData(recognizedNutrientText + recognizedText);
           });
           CleanData product = await futureCleanData!;
           print(product.weight);
@@ -131,7 +135,6 @@ class _CameraState extends State<Camera> {
           print(product.ingredients);
           break;
       }
-
     } catch (e) {
       if (!mounted) return;
 
@@ -247,28 +250,24 @@ class _CameraState extends State<Camera> {
   }
 
   @override
-  Widget build(BuildContext context, 
+  Widget build(
+    BuildContext context,
   ) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ML Text Recognition'),
       ),
-      body: Column(
-        children: [
-          IconButton(onPressed: () async{
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Inventory(),));
-          }, icon: Icon(Icons.login))
-        ],
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              if (pickedImagePaths[currentStep] != null) 
+              if (pickedImagePaths[currentStep] != null)
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: ImagePreview(imagePath: pickedImagePaths[currentStep]!),
+                  child:
+                      ImagePreview(imagePath: pickedImagePaths[currentStep]!),
                 )
               else
                 Padding(
@@ -313,7 +312,8 @@ class _CameraState extends State<Camera> {
               if (!isRecognizing && recognizedText.isNotEmpty) ...[
                 const Divider(),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                  padding:
+                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -19,11 +19,10 @@ class _Details extends State<Details> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            for(int i = 0; i < 100; i++)
-              Text("Hello World"),
+            for (int i = 0; i < 100; i++) Text("Hello World"),
           ],
         ),
+      ),
     );
   }
 }
-

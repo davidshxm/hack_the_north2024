@@ -15,11 +15,9 @@ class Inventory extends StatefulWidget {
 }
 
 class _InventoryPage extends State<Inventory> {
-  PanelController _pc = new PanelController();
   bool _isPanelVisible = false;
   final InventoryManager _inventoryManager = InventoryManager();
   PanelController _pc = PanelController();
-  bool _isPanelVisible = false;
   String value = ''; // Initially set to an empty string
 
   @override
