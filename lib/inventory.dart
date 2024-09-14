@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
-
+import 'dart:convert';
+import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'chatbot.dart';
@@ -17,7 +18,7 @@ class _InventoryPage extends State<Inventory> {
   bool isNull = true;
   final InventoryManager _inventoryManager = InventoryManager();
   PanelController _pc = PanelController();
-  int Index = -1;
+  int Index = 0; // -1
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _InventoryPage extends State<Inventory> {
     // print(product['ingredients']);
 
     // print(Index);
+    // dev.log(jsonEncode(product));
     return Scaffold(
       appBar: AppBar(
         title: Text("SlidingUpPanelExample"),
@@ -54,41 +56,46 @@ class _InventoryPage extends State<Inventory> {
         backdropEnabled: true,
         controller: _pc,
         panel: Center(
+          heightFactor: 0.8,
+          child: SingleChildScrollView(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+            children: [Container(
+                    width: double.infinity,
+                      height: 50,
+                      child: 
+                  
               ElevatedButton(
-                onPressed: () async {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ChatBot(prompt: "Hello!"),
-                      ));
-                },
-                child: const Text('ChatBot'),
-              ),
-              ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.pushReplacement(
                       context, MaterialPageRoute(builder: (context) => ChatBot()));
                 },
                 child: Text(product['name'] ?? "",),
-              ),
+              )),Container(
+                    width: double.infinity,
+                      height: 50,
+                      child: 
+                  
               ElevatedButton(
                 onPressed: (){
                   Navigator.pushReplacement(
                       context, MaterialPageRoute(builder: (context) => ChatBot()));
                 },
                 child: Text(product['description'] ?? "",),
-              ),
+              ),),
               Column(
                 children: [
                   if(!isNull)
                   for (int index = 0; index < product['nutrients'].length; index++)
+                  Container(
+                    width: double.infinity,
+                      height: 50,
+                      child: 
+                  
                     ElevatedButton(
+                      
                       onPressed: () {
                         Navigator.pushReplacement(
-                            context, MaterialPageRoute(builder: (context) => ChatBot()));
+                            context, MaterialPageRoute(builder: (context) => ChatBot(prompt: "Tell me more about ${product['nutrients'][index]['name']}")));
                       },
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
@@ -102,9 +109,11 @@ class _InventoryPage extends State<Inventory> {
                         ],
                       ),
                     ),
+                  ),
                 ],
               ),
             ],
+          ),
           ),
         ),
         body: _body(),
@@ -134,8 +143,7 @@ class _InventoryPage extends State<Inventory> {
               child: Image.asset('assets/PlusButton.png'),
               elevation: 0, // Remove shadow
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                    30), // Adjust the border radius if needed
+                borderRadius: BorderRadius.circular(60),
               ),
               backgroundColor: Colors
                   .transparent, // Make background transparent to remove border effect
