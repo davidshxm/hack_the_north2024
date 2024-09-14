@@ -51,6 +51,45 @@ Future<CleanData> createCleanData(String payload) async {
   }
 }
 
+Future<List<Nutrient>> createPopulatedNutrients(String payload) async {
+  final response = await http.post(
+    Uri.parse('http://10.37.100.33:3000/api/populate-nutrients'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'payload': payload,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return List<Nutrient>.from(jsonDecode(jsonDecode(response.body)['response']['text']).map((x) => Nutrient.fromJson(x)));
+  } else {
+    print(response.body);
+    throw Exception('Failed to create product');
+  }
+}
+
+Future<List<Ingredient>> createPopulatedIngredients(String payload) async {
+  final response = await http.post(
+    Uri.parse('http://10.37.100.33:3000/api/populate-ingredients'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'payload': payload,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return List<Ingredient>.from(jsonDecode(jsonDecode(response.body)['response']['text']).map((x) => Ingredient.fromJson(x)));
+  } else {
+    print(response.body);
+    throw Exception('Failed to create product');
+  }
+}
+
+
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -126,8 +165,10 @@ class _CameraState extends State<Camera> {
           });
           CleanData product = await futureCleanData!;
           print(product.weight);
-          print(product.nutrients);
-          print(product.ingredients);
+          List<Nutrient> nutrients = await createPopulatedNutrients(jsonEncode(product.nutrients.map((e) => e.toJson()).toList()));
+          List<Ingredient> ingredients = await createPopulatedIngredients(jsonEncode(product.ingredients));
+          print(nutrients);
+          print(ingredients);
           break;
       }
 
