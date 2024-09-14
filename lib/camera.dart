@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'image_preview.dart';
+import 'inventory.dart';
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -14,16 +15,17 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   late TextRecognizer textRecognizer;
   late ImagePicker imagePicker;
-
-  String? pickedImagePath;
   String recognizedText = "";
 
+  List<String?> pickedImagePaths = List.filled(3, null); // Store images for each step
+  List<bool> stepsCompleted = [false, false, false]; // Tracks whether each step is done or skipped
+
   bool isRecognizing = false;
+  int currentStep = 0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Product picture)
 
   @override
   void initState() {
     super.initState();
-
     textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
     imagePicker = ImagePicker();
   }
@@ -36,16 +38,15 @@ class _CameraState extends State<Camera> {
     }
 
     setState(() {
-      pickedImagePath = pickedImage.path;
+      pickedImagePaths[currentStep] = pickedImage.path;
+      stepsCompleted[currentStep] = true;
       isRecognizing = true;
     });
 
     try {
       final inputImage = InputImage.fromFilePath(pickedImage.path);
       final RecognizedText recognisedText =
-          await textRecognizer.processImage(inputImage);
-
-      recognizedText = "";
+      await textRecognizer.processImage(inputImage);
 
       for (TextBlock block in recognisedText.blocks) {
         for (TextLine line in block.lines) {
@@ -53,20 +54,42 @@ class _CameraState extends State<Camera> {
         }
       }
     } catch (e) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error recognizing text: $e'),
-        ),
+        SnackBar(content: Text('Error recognizing text: $e')),
       );
     } finally {
       setState(() {
         isRecognizing = false;
       });
+
+      // Move to next step
+      if (currentStep < 2) {
+        setState(() {
+          currentStep++;
+        });
+      }
     }
+  }
+
+  void _skipCurrentStep() {
+    setState(() {
+      stepsCompleted[currentStep] = true; // Mark step as completed (skipped)
+      if (currentStep < 2) {
+        currentStep++;
+      }
+    });
+  }
+
+  bool get isAllStepsCompleted => stepsCompleted.every((step) => step);
+
+  void _goToInventory() {
+    // Navigate to the Inventory page
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Inventory()), // Assuming Inventory is a separate page
+    );
   }
 
   void _chooseImageSourceModal() {
@@ -101,21 +124,6 @@ class _CameraState extends State<Camera> {
     );
   }
 
-  void _copyTextToClipboard() async {
-    if (recognizedText.isNotEmpty) {
-      await Clipboard.setData(ClipboardData(text: recognizedText));
-      if (!mounted) {
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Text copied to clipboard'),
-        ),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,10 +135,22 @@ class _CameraState extends State<Camera> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: ImagePreview(imagePath: pickedImagePath),
+              child: pickedImagePaths[currentStep] == null
+                  ? const Text('No image selected for this step')
+                  : ImagePreview(imagePath: pickedImagePaths[currentStep]!),
+            ),
+            // Display current step
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Step ${currentStep + 1} of 3',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
             ElevatedButton(
-              onPressed: isRecognizing ? null : _chooseImageSourceModal,
+              onPressed: isAllStepsCompleted || isRecognizing
+                  ? null
+                  : _chooseImageSourceModal,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -148,52 +168,19 @@ class _CameraState extends State<Camera> {
                 ],
               ),
             ),
+            ElevatedButton(
+              onPressed: isAllStepsCompleted ? null : _skipCurrentStep,
+              child: const Text('Skip'),
+            ),
             const Divider(),
+            // Display recognized text or move to next step
             Padding(
-              padding: const EdgeInsets.only(
-                left: 16,
-                right: 16,
-                bottom: 16,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Recognized Text",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.copy,
-                      size: 16,
-                    ),
-                    onPressed: _copyTextToClipboard,
-                  ),
-                ],
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: isAllStepsCompleted ? _goToInventory : null, // Only active when all steps are done
+                child: const Text('Go to Inventory'),
               ),
             ),
-            if (!isRecognizing) ...[
-              Expanded(
-                child: Scrollbar(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: SelectableText(
-                            recognizedText.isEmpty
-                                ? "No text recognized"
-                                : recognizedText,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ),
