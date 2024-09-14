@@ -37,7 +37,14 @@ class _InventoryPage extends State<Inventory> {
 
   @override
   Widget build(BuildContext context) {
-    print(_inventoryManager.getItemCount());
+    Map<String, dynamic> product = _inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index));
+    // print(_inventoryManager.getItemCount());
+    // print(product['name']);
+    // print(product['description']);
+    // print(product['nutrients']);
+    // print(product['ingredients']);
+
+    // print(Index);
     return Scaffold(
       appBar: AppBar(
         title: Text("SlidingUpPanelExample"),
@@ -65,26 +72,19 @@ class _InventoryPage extends State<Inventory> {
                   Navigator.pushReplacement(
                       context, MaterialPageRoute(builder: (context) => ChatBot()));
                 },
-                child: Text(_inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['name'] ?? "",),
+                child: Text(product['name'] ?? "",),
               ),
               ElevatedButton(
                 onPressed: (){
                   Navigator.pushReplacement(
                       context, MaterialPageRoute(builder: (context) => ChatBot()));
                 },
-                child: Text(_inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['description'] ?? "",),
-              ),
-              ElevatedButton(
-                onPressed: (){
-                  Navigator.pushReplacement(
-                      context, MaterialPageRoute(builder: (context) => ChatBot()));
-                },
-                child: Text(_inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['weight'] ?? "",),
+                child: Text(product['description'] ?? "",),
               ),
               Column(
                 children: [
                   if(!isNull)
-                  for (int index = 0; index < _inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['nutrition'].length; index++)
+                  for (int index = 0; index < product['nutrients'].length; index++)
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pushReplacement(
@@ -93,11 +93,11 @@ class _InventoryPage extends State<Inventory> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
                         children: [
-                          Text(_inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(index))['nutrition']['name'],
+                          Text(product['nutrients'][index]['name'],
                             style: TextStyle(fontWeight: FontWeight.bold), // Nutrient name
                           ),
                           SizedBox(height: 5), // Space between lines
-                          Text(_inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(index))['nutrition']['value'], // Nutrient description
+                          Text(product['nutrients'][index]['value'], // Nutrient description
                           ),
                         ],
                       ),
