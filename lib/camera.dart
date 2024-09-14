@@ -102,9 +102,9 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   late TextRecognizer textRecognizer;
   late ImagePicker imagePicker;
-  Meta meta = Meta(name: "", description: "");
+  Meta meta = Meta(label: "", name: "", description: "");
   Product product =
-      Product(name: "", description: "", nutrients: [], ingredients: []);
+      Product(label: "", name: "", description: "", nutrients: [], ingredients: []);
   String recognizedText = "";
   String recognizedNutrientText = "";
   String recognizedIngredientText = "";
@@ -171,6 +171,7 @@ class _CameraState extends State<Camera> {
             createPopulatedIngredients(recognizedText)
           ]);
           Product p = Product(
+              label: meta.label,
               name: meta.name,
               description: meta.description,
               nutrients: results[0] as List<Nutrient>,

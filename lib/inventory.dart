@@ -167,8 +167,8 @@ class _InventoryPage extends State<Inventory> {
               IconButton(
                 icon: Image.asset(
                   _getRandomImage(index),
-                  width: 100,
-                  height: 100,
+                  width: 120,
+                  height: 120,
                   fit: BoxFit.contain,
                 ),
                 iconSize: 100,
@@ -184,7 +184,7 @@ class _InventoryPage extends State<Inventory> {
                 bottom:
                     22, // Adjust this to control the vertical position of the text
                 child: Text(
-                  _inventoryManager.getItemNameByIndex(index),
+                  _inventoryManager.getItemLabelByIndex(index),
                   style: const TextStyle(
                       fontSize: 15, // Adjust the font size as needed
                       color: Colors.white, // Set the text color

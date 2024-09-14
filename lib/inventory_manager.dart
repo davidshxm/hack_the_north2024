@@ -42,6 +42,13 @@ class InventoryManager {
     return _inventoryMap.keys.toList()[index];
   }
 
+  String getItemLabelByIndex(int index) {
+    if (index < 0 || index >= _inventoryMap.length) {
+      return "";
+    }
+    return _inventoryMap[_inventoryMap.keys.toList()[index]]['label'];
+  }
+
   Map<String, dynamic> getEntryByName(String name) {
     if (!_inventoryMap.containsKey(name)) {
       return {};
