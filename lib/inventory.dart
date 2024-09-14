@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'inventory_manager.dart';
@@ -130,6 +132,7 @@ class _InventoryPage extends State<Inventory> {
                                       fontSize: 15, // Adjust the font size as needed
                                       color: Colors.white, // Set the text color
                                       fontWeight: FontWeight.bold, // Make the text bold
+                                      fontFamily: 'PixelifySans',
                                     ),
                                     textAlign: TextAlign.center, // Aligns the text to center
                                   ),
