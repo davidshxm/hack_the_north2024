@@ -5,6 +5,52 @@ import 'package:image_picker/image_picker.dart';
 import 'image_preview.dart';
 import 'inventory_manager.dart';
 import 'inventory.dart';
+import 'byte.dart';
+import 'dart:convert'; // For decoding JSON
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+
+Future<Meta> createMeta(String payload) async {
+  final response = await http.post(
+    Uri.parse('https://htn2024-backend-uftm.vercel.app/api/meta'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'payload': payload,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    //return Meta.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return Meta.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  } else {
+    throw Exception('Failed to create product');
+  }
+}
+
+Future<CleanData> createCleanData(String payload) async {
+  final response = await http.post(
+    Uri.parse('http://10.37.100.33:3000/api/clean'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'payload': payload,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return CleanData.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  } else {
+    print(payload);
+    print(response.statusCode);
+    print(response.body);
+    throw Exception(response.body);
+  }
+}
+
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -16,13 +62,17 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   late TextRecognizer textRecognizer;
   late ImagePicker imagePicker;
+  Future<Meta>? futureMeta;
+  Future<CleanData>? futureCleanData;
   String recognizedText = "";
+  String recognizedNutrientText = "";
+  String recognizedIngredientText = "";
 
   List<String?> pickedImagePaths = List.filled(3, null); // Store images for each step
   List<bool> stepsCompleted = [false, false, false]; // Tracks whether each step is done or skipped
 
   bool isRecognizing = false;
-  int currentStep = 0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Product picture)
+  int currentStep = 0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Meta picture)
 
   @override
   void initState() {
@@ -55,6 +105,32 @@ class _CameraState extends State<Camera> {
           recognizedText += "${line.text}\n";
         }
       }
+
+      switch (currentStep) {
+        case 0:
+          setState(() {
+            futureMeta = createMeta(recognizedText);
+          });
+          Meta product = await futureMeta!;
+          print(product.name);
+          print(product.description);
+          break;
+        case 1:
+          setState(() {
+            recognizedNutrientText = recognizedText;
+          });
+          break;
+        case 2:
+          setState(() {
+            futureCleanData = createCleanData(recognizedNutrientText + recognizedText);
+          });
+          CleanData product = await futureCleanData!;
+          print(product.weight);
+          print(product.nutrients);
+          print(product.ingredients);
+          break;
+      }
+
     } catch (e) {
       if (!mounted) return;
 
@@ -93,10 +169,10 @@ class _CameraState extends State<Camera> {
       builder: (context) {
         String name = '';
         return AlertDialog(
-          title: const Text('Enter Product Name'),
+          title: const Text('Enter Meta Name'),
           content: TextField(
             autofocus: true,
-            decoration: const InputDecoration(hintText: 'Product Name'),
+            decoration: const InputDecoration(hintText: 'Meta Name'),
             onChanged: (value) => name = value,
           ),
           actions: [
@@ -170,7 +246,8 @@ class _CameraState extends State<Camera> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, 
+  ) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ML Text Recognition'),
