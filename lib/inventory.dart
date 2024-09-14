@@ -8,7 +8,6 @@ import 'inventory_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Inventory extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => _InventoryPage();
 }
@@ -59,7 +58,8 @@ class _InventoryPage extends State<Inventory> {
                 child: const Text('ChatBot'),
               ),
               Text(
-                _inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['description'],
+                _inventoryManager.getEntryByName(
+                    _inventoryManager.getItemNameByIndex(Index))['description'],
               )
             ],
           ),
@@ -185,11 +185,10 @@ class _InventoryPage extends State<Inventory> {
                 child: Text(
                   _inventoryManager.getItemNameByIndex(index),
                   style: const TextStyle(
-                    fontSize: 15, // Adjust the font size as needed
-                    color: Colors.white, // Set the text color
-                    fontWeight: FontWeight.bold, // Make the text bold
-                    fontFamily: 'PixelifySans'
-                  ),
+                      fontSize: 15, // Adjust the font size as needed
+                      color: Colors.white, // Set the text color
+                      fontWeight: FontWeight.bold, // Make the text bold
+                      fontFamily: 'PixelifySans'),
                   textAlign: TextAlign.center, // Aligns the text to center
                 ),
               ),
