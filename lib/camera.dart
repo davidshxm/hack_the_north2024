@@ -241,7 +241,7 @@ class _CameraState extends State<Camera> {
     // Add new item to inventory and navigate to Inventory page
     if (productName != null && productName.isNotEmpty) {
       final inventoryManager = InventoryManager();
-      inventoryManager.addItem(productName, data);
+      inventoryManager.addItem(productName, data.toJson());
 
       Navigator.pushReplacement(
         context,

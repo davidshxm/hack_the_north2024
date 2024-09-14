@@ -28,7 +28,7 @@ class InventoryManager {
   }
 
   void addItem(String item, Map<String, dynamic> entry) {
-    _inventoryMap[item] = [entry];
+    _inventoryMap[item] = entry;
     _inventoryList.writeInventory(jsonEncode(_inventoryMap));
   }
 
