@@ -21,7 +21,7 @@ class _InventoryPage extends State<Inventory> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text('ScanBite'),
+        title: Text('Inventory'),
       ),
       body: Column(
         children: [

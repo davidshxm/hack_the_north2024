@@ -14,7 +14,7 @@ class _Camera extends State<Camera> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text('ScanBite'),
+        title: Text('Camera'),
       ),
       body: Column(
         children: [
