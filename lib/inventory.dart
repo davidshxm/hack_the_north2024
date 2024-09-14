@@ -8,7 +8,6 @@ import 'inventory_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Inventory extends StatefulWidget {
-  const Inventory({super.key});
 
   @override
   State<StatefulWidget> createState() => _InventoryPage();
@@ -184,7 +183,8 @@ class _InventoryPage extends State<Inventory> {
                 bottom:
                     22, // Adjust this to control the vertical position of the text
                 child: Text(
-                  _inventoryManager.getItemNameByIndex(index),
+                  encodeJSON(_inventoryManager.getEntryByName(
+                      _inventoryManager.getItemNameByIndex(index))),
                   style: const TextStyle(
                     fontSize: 15, // Adjust the font size as needed
                     color: Colors.white, // Set the text color
