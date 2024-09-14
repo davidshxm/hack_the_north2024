@@ -15,13 +15,7 @@ class InventoryManager {
 
   static final InventoryStorage _inventoryList = InventoryStorage();
 
-  final Map<String, dynamic> _inventoryMap = {
-    "Lay's Ketchup Chips":{
-  "name": "Lay's Ketchup Chips",
-  "description": "Lorem ipsum dolor sit amet.",
-  "weight": "28 g"
-}
-  };
+  final Map<String, dynamic> _inventoryMap = {};
 
   factory InventoryManager() {
     return _instance;
