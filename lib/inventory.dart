@@ -97,7 +97,7 @@ class _InventoryPage extends State<Inventory> {
                             style: TextStyle(fontWeight: FontWeight.bold), // Nutrient name
                           ),
                           SizedBox(height: 5), // Space between lines
-                          Text(product['nutrients'][index]['value'], // Nutrient description
+                          Text(product['nutrients'][index]['value'].toString(), // Nutrient description
                           ),
                         ],
                       ),
