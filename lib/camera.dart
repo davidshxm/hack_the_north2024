@@ -100,8 +100,8 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   late TextRecognizer textRecognizer;
   late ImagePicker imagePicker;
-  Future<Meta>? futureMeta;
-  Future<CleanData>? futureCleanData;
+  Meta meta = Meta(name: "", description: "");
+  Product product = Product(name: "", description: "", nutrients: [], ingredients: []);
   String recognizedText = "";
   String recognizedNutrientText = "";
   String recognizedIngredientText = "";
@@ -152,12 +152,10 @@ class _CameraState extends State<Camera> {
 
       switch (currentStep) {
         case 0:
+          Meta m = await createMeta(recognizedText);
           setState(() {
-            futureMeta = createMeta(recognizedText);
+            meta = m;
           });
-          Meta product = await futureMeta!;
-          print(product.name);
-          print(product.description);
           break;
         case 1:
           setState(() {
@@ -165,21 +163,14 @@ class _CameraState extends State<Camera> {
           });
           break;
         case 2:
-          setState(() {
-            futureCleanData =
-                createCleanData(recognizedNutrientText + recognizedText);
-          });
-          CleanData product = await futureCleanData!;
-          print(product.weight);
           final results = await Future.wait([
-            createPopulatedNutrients(jsonEncode(product.nutrients.map((e) => e.toJson()).toList())),
-            createPopulatedIngredients(jsonEncode(product.ingredients))
+            createPopulatedNutrients(recognizedNutrientText),
+            createPopulatedIngredients(recognizedText)
           ]);
-
-          List<Nutrient> nutrients = results[0] as List<Nutrient>;
-          List<Ingredient> ingredients = results[1] as List<Ingredient>;
-          print(nutrients);
-          print(ingredients);
+          Product p = Product(name: meta.name, description: meta.description, nutrients: results[0] as List<Nutrient>, ingredients: results[1] as List<Ingredient>);
+          setState(() {
+            product = p;
+          });
           break;
       }
     } catch (e) {

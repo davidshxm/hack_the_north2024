@@ -88,14 +88,12 @@ class BasicNutrient {
 class Product {
   String name;
   String description;
-  String weight;
   List<Nutrient> nutrients;
   List<Ingredient> ingredients;
 
   Product({
     required this.name,
     required this.description,
-    required this.weight,
     required this.nutrients,
     required this.ingredients,
   });
@@ -105,7 +103,6 @@ class Product {
     return Product(
       name: json['name'],
       description: json['description'],
-      weight: json['weight'],
       nutrients: List<Nutrient>.from(json['nutrients'].map((x) => Nutrient.fromJson(x))),
       ingredients: List<Ingredient>.from(json['ingredients'].map((x) => Ingredient.fromJson(x))),
     );
@@ -116,7 +113,6 @@ class Product {
     return {
       'name': name,
       'description': description,
-      'weight': weight,
       'nutrients': nutrients.map((x) => x.toJson()).toList(),
       'ingredients': ingredients.map((x) => x.toJson()).toList(),
     };
