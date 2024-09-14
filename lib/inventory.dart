@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'camera.dart';
+import 'chatbot.dart';
 import 'inventory_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -43,9 +44,20 @@ class _InventoryPage extends State<Inventory> {
         backdropEnabled: true,
         controller: _pc,
         panel: Center(
-          child: value.isNotEmpty && _inventoryManager.test[value] != null
-              ? Text(_inventoryManager.test[value]!)
-              : const Text('Please select an item.'), // Fallback text if value is not set or null
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () async{
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ChatBot(),));
+                },
+                child: const Text('ChatBot'),
+              ),
+              value.isNotEmpty && _inventoryManager.test[value] != null
+                  ? Text(_inventoryManager.test[value]!)
+                  : const Text('Please select an item.'),
+            ],
+          ),
         ),
         body: _body(),
         onPanelOpened: () {
