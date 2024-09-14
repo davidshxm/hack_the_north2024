@@ -72,7 +72,7 @@ class _ChatBot extends State<ChatBot> {
   }
 
   void _backToInventory() {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Inventory(),));
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Inventory()));
   }
 
   @override

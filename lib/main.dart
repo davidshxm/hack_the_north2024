@@ -14,11 +14,11 @@ class ScanBite extends StatelessWidget {
     return MaterialApp(
       title: 'ScanBite',
       theme: ThemeData(
-
+        fontFamily: 'PixelifySans',
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Inventory(),
+      home: Inventory(),
     );
   }
 }

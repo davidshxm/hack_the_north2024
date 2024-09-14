@@ -183,8 +183,7 @@ class _InventoryPage extends State<Inventory> {
                 bottom:
                     22, // Adjust this to control the vertical position of the text
                 child: Text(
-                  encodeJSON(_inventoryManager.getEntryByName(
-                      _inventoryManager.getItemNameByIndex(index))),
+                  _inventoryManager.getItemNameByIndex(index),
                   style: const TextStyle(
                     fontSize: 15, // Adjust the font size as needed
                     color: Colors.white, // Set the text color
