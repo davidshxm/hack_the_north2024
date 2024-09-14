@@ -59,7 +59,6 @@ class _InventoryPage extends State<Inventory> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.grey[600],
         onPressed: () async {
           // Navigate to the camera page when clicked
           Navigator.pushReplacement(
@@ -69,7 +68,7 @@ class _InventoryPage extends State<Inventory> {
             ),
           );
         },
-        child: const Icon(Icons.add),
+        child: Image.asset('assets/PlusButton.png'),
       ),
     );
   }
