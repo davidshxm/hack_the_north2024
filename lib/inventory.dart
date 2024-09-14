@@ -35,9 +35,11 @@ class _InventoryPage extends State<Inventory> {
         backdropEnabled: true,
         controller: _pc,
         panel: Center(
-          child: value.isNotEmpty && _inventoryManager.test[value] != null
-              ? Text(_inventoryManager.test[value]!)
-              : const Text('Please select an item.'), // Fallback text if value is not set or null
+          child: value.isNotEmpty &&
+                  _inventoryManager.getEntryByName(value) != null
+              ? Text(_inventoryManager.getEntryByName(value)["Description"]!)
+              : const Text(
+                  'Please select an item.'), // Fallback text if value is not set or null
         ),
         body: _body(),
         onPanelOpened: () {
@@ -75,7 +77,7 @@ class _InventoryPage extends State<Inventory> {
             Expanded(
               child: GridView.builder(
                 padding: const EdgeInsets.all(10),
-                itemCount: _inventoryManager.inventoryItems.length,
+                itemCount: _inventoryManager.getItemCount(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
                   crossAxisSpacing: 10,
@@ -88,23 +90,27 @@ class _InventoryPage extends State<Inventory> {
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            value = _inventoryManager.inventoryItems[index]; // Set value to the item string
+                            value = _inventoryManager.getItemNameByIndex(
+                                index); // Set value to the item string
                           });
                           _pc.open(); // Open the panel after setting the value
                         },
                         style: ElevatedButton.styleFrom(
-                          elevation: 5, // You can adjust the elevation as needed
+                          elevation:
+                              5, // You can adjust the elevation as needed
                           fixedSize: const Size(80, 80), // Set the size
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          backgroundColor: Colors.grey[400], // Set the button background color
+                          backgroundColor: Colors
+                              .grey[400], // Set the button background color
                         ),
-                        child: null, // You can add an icon or image here if needed
+                        child:
+                            null, // You can add an icon or image here if needed
                       ),
                       const SizedBox(height: 4),
                       // Item name below the icon (line up with graphic in box after)
-                      Text(_inventoryManager.inventoryItems[index],
+                      Text(_inventoryManager.getItemNameByIndex(index),
                           style: const TextStyle(fontSize: 15)),
                     ],
                   );
