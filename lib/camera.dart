@@ -211,17 +211,17 @@ class _CameraState extends State<Camera> {
 
   bool get isAllStepsCompleted => stepsCompleted.every((step) => step);
 
-  void _goToInventory() async {
+  void _goToInventory(data) async {
     // Show popup to enter product name
     final productName = await showDialog<String>(
       context: context,
       builder: (context) {
         String name = '';
         return AlertDialog(
-          title: const Text('Enter Meta Name'),
+          title: const Text('Enter Product Name'),
           content: TextField(
             autofocus: true,
-            decoration: const InputDecoration(hintText: 'Meta Name'),
+            decoration: const InputDecoration(hintText: 'Product Name'),
             onChanged: (value) => name = value,
           ),
           actions: [
@@ -241,7 +241,7 @@ class _CameraState extends State<Camera> {
     // Add new item to inventory and navigate to Inventory page
     if (productName != null && productName.isNotEmpty) {
       final inventoryManager = InventoryManager();
-      inventoryManager.addItem(productName, {});
+      inventoryManager.addItem(productName, data);
 
       Navigator.pushReplacement(
         context,
@@ -351,7 +351,7 @@ class _CameraState extends State<Camera> {
                 child: const Text('Skip'),
               ),
               ElevatedButton(
-                onPressed: isAllStepsCompleted ? _goToInventory : null,
+                onPressed: isAllStepsCompleted ? () => _goToInventory(product) : null,
                 child: const Text('Go to Inventory'),
               ),
               if (!isRecognizing && recognizedText.isNotEmpty) ...[
