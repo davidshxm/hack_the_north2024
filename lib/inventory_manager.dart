@@ -31,10 +31,16 @@ class InventoryManager {
   }
 
   String getItemNameByIndex(int index) {
+    if (index < 0 || index >= _inventoryMap.length) {
+      return "";
+    }
     return _inventoryMap.keys.toList()[index];
   }
 
   Map<String, dynamic> getEntryByName(String name) {
+    if (!_inventoryMap.containsKey(name)) {
+      return {};
+    }
     return _inventoryMap[name];
   }
 }

@@ -17,7 +17,7 @@ class _InventoryPage extends State<Inventory> {
   bool _isPanelVisible = false;
   final InventoryManager _inventoryManager = InventoryManager();
   PanelController _pc = PanelController();
-  int Index = 0;
+  int Index = -1;
 
   @override
   void initState() {
@@ -53,13 +53,13 @@ class _InventoryPage extends State<Inventory> {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ChatBot(),
+                        builder: (context) => const ChatBot(prompt: "Hello!"),
                       ));
                 },
                 child: const Text('ChatBot'),
               ),
               Text(
-                _inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['description'],
+                _inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index))['description'] ?? "",
               )
             ],
           ),

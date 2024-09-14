@@ -43,7 +43,9 @@ Future<chatResponse> createChatResponse(String payload) async {
 }
 
 class ChatBot extends StatefulWidget {
-  const ChatBot({super.key});
+  final String? prompt;
+
+  const ChatBot({Key? key, this.prompt}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ChatBot();
@@ -52,6 +54,27 @@ class ChatBot extends StatefulWidget {
 class _ChatBot extends State<ChatBot> {
   final List<String> _messages = [];
   final TextEditingController _controller = TextEditingController();
+
+  void initState() async {
+    super.initState();
+    if (widget.prompt != null) {
+      _controller.clear();
+    setState(() {
+      _messages.add('You: ${widget.prompt}');
+    });
+
+    try {
+      chatResponse response = await createChatResponse(widget.prompt!);
+      setState(() {
+        _messages.add('Bot: ${response.message}');
+      });
+    } catch (e) {
+      setState(() {
+        _messages.add('Bot: Error occurred');
+      });
+    }
+    }
+  }
 
   void _handleSubmitted(String text) async {
     _controller.clear();
