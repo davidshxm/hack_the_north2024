@@ -1,5 +1,6 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'dart:math'; // Import dart:math for randomization
 import 'camera.dart';
 import 'inventory_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -16,7 +17,6 @@ class _InventoryPage extends State<Inventory> {
   PanelController _pc = PanelController();
   bool _isPanelVisible = false;
   String value = ''; // Initially set to an empty string
-  final Random _random = Random(); // Create an instance of Random for random image selection
 
   @override
   void initState() {
@@ -24,13 +24,13 @@ class _InventoryPage extends State<Inventory> {
   }
 
   // Function to select a random image
-  String _getRandomImage() {
+  String _getRandomImage(int index) {
     List<String> images = [
       'assets/GameBoy-2.png',
       'assets/Card-2.png',
       'assets/Tamagotchi-2.png',
     ];
-    return images[_random.nextInt(images.length)]; // Randomly pick an image from the list
+    return images[index % images.length]; 
   }
 
   @override
@@ -58,7 +58,9 @@ class _InventoryPage extends State<Inventory> {
           });
         },
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: _isPanelVisible
+          ? null // Hide FAB when the panel is visible
+          : FloatingActionButton(
         onPressed: () async {
           // Navigate to the camera page when clicked
           Navigator.pushReplacement(
@@ -69,6 +71,11 @@ class _InventoryPage extends State<Inventory> {
           );
         },
         child: Image.asset('assets/PlusButton.png'),
+        elevation: 0, // Remove shadow
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30), // Adjust the border radius if needed
+        ),
+        backgroundColor: Colors.transparent, // Make background transparent to remove border effect
       ),
     );
   }
