@@ -1,10 +1,96 @@
 import 'package:flutter/material.dart';
+import 'inventory.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'image_preview.dart';
 import 'inventory_manager.dart';
-import 'inventory.dart';
+import 'byte.dart';
+import 'dart:convert'; // For decoding JSON
+import 'package:http/http.dart' as http;
+
+Future<Meta> createMeta(String payload) async {
+  final response = await http.post(
+    Uri.parse('https://htn2024-backend-uftm.vercel.app/api/meta'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'payload': payload,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    //return Meta.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return Meta.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  } else {
+    throw Exception('Failed to create product');
+  }
+}
+
+Future<CleanData> createCleanData(String payload) async {
+  final response = await http.post(
+    Uri.parse('http://10.37.100.33:3000/api/clean'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'payload': payload,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return CleanData.fromJson(
+        jsonDecode(response.body) as Map<String, dynamic>);
+  } else {
+    print(payload);
+    print(response.statusCode);
+    print(response.body);
+    throw Exception(response.body);
+  }
+}
+
+Future<List<Nutrient>> createPopulatedNutrients(String payload) async {
+  final response = await http.post(
+    Uri.parse('http://10.37.100.33:3000/api/populate-nutrients'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'payload': payload,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return List<Nutrient>.from(
+        jsonDecode(jsonDecode(response.body)['response']['text'])
+            .map((x) => Nutrient.fromJson(x)));
+  } else {
+    print(response.body);
+    throw Exception('Failed to create product');
+  }
+}
+
+Future<List<Ingredient>> createPopulatedIngredients(String payload) async {
+  final response = await http.post(
+    Uri.parse('http://10.37.100.33:3000/api/populate-ingredients'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'payload': payload,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return List<Ingredient>.from(
+        jsonDecode(jsonDecode(response.body)['response']['text'])
+            .map((x) => Ingredient.fromJson(x)));
+  } else {
+    print(response.body);
+    throw Exception('Failed to create product');
+  }
+}
 
 class Camera extends StatefulWidget {
   const Camera({super.key});
@@ -16,7 +102,12 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   late TextRecognizer textRecognizer;
   late ImagePicker imagePicker;
+  Meta meta = Meta(name: "", description: "");
+  Product product =
+      Product(name: "", description: "", nutrients: [], ingredients: []);
   String recognizedText = "";
+  String recognizedNutrientText = "";
+  String recognizedIngredientText = "";
 
   List<String?> pickedImagePaths =
       List.filled(3, null); // Store images for each step
@@ -61,6 +152,34 @@ class _CameraState extends State<Camera> {
           recognizedText += "${line.text}\n";
         }
       }
+
+      switch (currentStep) {
+        case 0:
+          Meta m = await createMeta(recognizedText);
+          setState(() {
+            meta = m;
+          });
+          break;
+        case 1:
+          setState(() {
+            recognizedNutrientText = recognizedText;
+          });
+          break;
+        case 2:
+          final results = await Future.wait([
+            createPopulatedNutrients(recognizedNutrientText),
+            createPopulatedIngredients(recognizedText)
+          ]);
+          Product p = Product(
+              name: meta.name,
+              description: meta.description,
+              nutrients: results[0] as List<Nutrient>,
+              ingredients: results[1] as List<Ingredient>);
+          setState(() {
+            product = p;
+          });
+          break;
+      }
     } catch (e) {
       if (!mounted) return;
 
@@ -99,10 +218,10 @@ class _CameraState extends State<Camera> {
       builder: (context) {
         String name = '';
         return AlertDialog(
-          title: const Text('Enter Product Name'),
+          title: const Text('Enter Meta Name'),
           content: TextField(
             autofocus: true,
-            decoration: const InputDecoration(hintText: 'Product Name'),
+            decoration: const InputDecoration(hintText: 'Meta Name'),
             onChanged: (value) => name = value,
           ),
           actions: [
@@ -176,7 +295,9 @@ class _CameraState extends State<Camera> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ML Text Recognition'),
