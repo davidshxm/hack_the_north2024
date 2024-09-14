@@ -48,7 +48,7 @@ class InventoryManager {
 // Adapted from Flutter documentation
 class InventoryStorage {
   Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
+    final directory = await getLibraryDirectory();
 
     return directory.path;
   }
