@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 
 class ImagePreview extends StatelessWidget {
   const ImagePreview({
-    Key? key,
+    super.key,
     required this.imagePath,
-  }) : super(key: key);
+  });
 
   final String? imagePath;
 

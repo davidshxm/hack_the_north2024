@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'image_preview.dart';
+import 'inventory_manager.dart';
 import 'inventory.dart';
 
 class Camera extends StatefulWidget {
@@ -46,8 +47,9 @@ class _CameraState extends State<Camera> {
     try {
       final inputImage = InputImage.fromFilePath(pickedImage.path);
       final RecognizedText recognisedText =
-      await textRecognizer.processImage(inputImage);
+          await textRecognizer.processImage(inputImage);
 
+      recognizedText = "";
       for (TextBlock block in recognisedText.blocks) {
         for (TextLine line in block.lines) {
           recognizedText += "${line.text}\n";
@@ -84,12 +86,43 @@ class _CameraState extends State<Camera> {
 
   bool get isAllStepsCompleted => stepsCompleted.every((step) => step);
 
-  void _goToInventory() {
-    // Navigate to the Inventory page
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Inventory()), // Assuming Inventory is a separate page
+  void _goToInventory() async {
+    // Show popup to enter product name
+    final productName = await showDialog<String>(
+      context: context,
+      builder: (context) {
+        String name = '';
+        return AlertDialog(
+          title: const Text('Enter Product Name'),
+          content: TextField(
+            autofocus: true,
+            decoration: const InputDecoration(hintText: 'Product Name'),
+            onChanged: (value) => name = value,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, name),
+              child: const Text('OK'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, null),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
     );
+
+    // Add new item to inventory and navigate to Inventory page
+    if (productName != null && productName.isNotEmpty) {
+      final inventoryManager = InventoryManager();
+      inventoryManager.addItem(productName);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => Inventory()),
+      );
+    }
   }
 
   void _chooseImageSourceModal() {
@@ -124,6 +157,18 @@ class _CameraState extends State<Camera> {
     );
   }
 
+  // Mainly for testing purposes rn, can remove later
+  void _copyTextToClipboard() async {
+    if (recognizedText.isNotEmpty) {
+      await Clipboard.setData(ClipboardData(text: recognizedText));
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Text copied to clipboard')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -131,57 +176,95 @@ class _CameraState extends State<Camera> {
         title: const Text('ML Text Recognition'),
       ),
       body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: pickedImagePaths[currentStep] == null
-                  ? const Text('No image selected for this step')
-                  : ImagePreview(imagePath: pickedImagePaths[currentStep]!),
-            ),
-            // Display current step
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Step ${currentStep + 1} of 3',
-                style: const TextStyle(fontWeight: FontWeight.bold),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              if (pickedImagePaths[currentStep] != null) 
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ImagePreview(imagePath: pickedImagePaths[currentStep]!),
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: const Text('No image selected for this step'),
+                ),
+              // Display current step
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Step ${currentStep + 1} of 3',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: isAllStepsCompleted || isRecognizing
-                  ? null
-                  : _chooseImageSourceModal,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Pick an image'),
-                  if (isRecognizing) ...[
-                    const SizedBox(width: 20),
-                    const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1.5,
+              ElevatedButton(
+                onPressed: isRecognizing ? null : _chooseImageSourceModal,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Pick an image'),
+                    if (isRecognizing) ...[
+                      const SizedBox(width: 20),
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 1.5,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: isAllStepsCompleted ? null : _skipCurrentStep,
-              child: const Text('Skip'),
-            ),
-            const Divider(),
-            // Display recognized text or move to next step
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: isAllStepsCompleted ? _goToInventory : null, // Only active when all steps are done
+              ElevatedButton(
+                onPressed: isAllStepsCompleted ? null : _skipCurrentStep,
+                child: const Text('Skip'),
+              ),
+              ElevatedButton(
+                onPressed: isAllStepsCompleted ? _goToInventory : null,
                 child: const Text('Go to Inventory'),
               ),
-            ),
-          ],
+              if (!isRecognizing && recognizedText.isNotEmpty) ...[
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Recognized Text",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.copy, size: 16),
+                        onPressed: _copyTextToClipboard,
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Scrollbar(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: SelectableText(
+                              recognizedText.isEmpty
+                                  ? "No text recognized"
+                                  : recognizedText,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
