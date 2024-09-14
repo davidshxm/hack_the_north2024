@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Details extends StatefulWidget {
+  const Details({super.key});
+
   @override
   State<StatefulWidget> createState() => _Details();
 }
@@ -12,7 +14,7 @@ class _Details extends State<Details> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text('Details'),
+        title: const Text('Details'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -21,7 +23,6 @@ class _Details extends State<Details> {
               Text("Hello World"),
           ],
         ),
-      ),
     );
   }
 }

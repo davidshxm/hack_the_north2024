@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'camera.dart';
+
 class ChatBot extends StatefulWidget {
+  const ChatBot({super.key});
+
   @override
   State<StatefulWidget> createState() => _ChatBot();
 }
@@ -12,12 +16,13 @@ class _ChatBot extends State<ChatBot> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text('ChatBot'),
+        title: const Text('ChatBot'),
       ),
       body: Column(
         children: [
           IconButton(onPressed: () async{
-          }, icon: Icon(Icons.login))
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Camera(),));
+          }, icon: const Icon(Icons.login))
         ],
       ),
     );
