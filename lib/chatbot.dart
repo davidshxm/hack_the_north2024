@@ -54,24 +54,26 @@ class _ChatBot extends State<ChatBot> {
   final List<String> _messages = [];
   final TextEditingController _controller = TextEditingController();
 
-  void initState() async {
+  void initState() {
     super.initState();
     if (widget.prompt != null) {
       _controller.clear();
-      setState(() {
-        _messages.add('You: ${widget.prompt}');
-      });
+      _messages.add('You: ${widget.prompt}');
+      _handleInitPrompt();
+    }
+  }
 
-      try {
-        chatResponse response = await createChatResponse(widget.prompt!);
-        setState(() {
-          _messages.add('Bot: ${response.message}');
-        });
-      } catch (e) {
-        setState(() {
-          _messages.add('Bot: Error occurred');
-        });
-      }
+  void _handleInitPrompt() async {
+    try {
+      chatResponse response = await createChatResponse(widget.prompt! + " Keep the response under 100 characters.");
+      if (!mounted) return;
+      setState(() {
+        _messages.add('Bot: ${response.message}');
+      });
+    } catch (e) {
+      setState(() {
+        _messages.add('Bot: Error occurred');
+      });
     }
   }
 
