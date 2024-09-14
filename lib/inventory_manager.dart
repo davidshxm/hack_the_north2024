@@ -5,9 +5,9 @@ import 'dart:convert';
 
 class InventoryManager {
   InventoryManager._privateConstructor() {
-    // String JSON = "";
-    // _inventoryList.readInventory().then((value) => (JSON = value));
-    // _inventoryMap.addAll(jsonDecode(JSON));
+    String JSON = "{}";
+    _inventoryList.readInventory().then((value) => (JSON = value));
+    _inventoryMap.addAll(jsonDecode(JSON));
   }
 
   static final InventoryManager _instance =
