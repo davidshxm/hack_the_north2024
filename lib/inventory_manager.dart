@@ -21,6 +21,11 @@ class InventoryManager {
     return _instance;
   }
 
+  void removeItem(String item) {
+    _inventoryMap.remove(item);
+    _inventoryList.writeInventory(jsonEncode(_inventoryMap));
+  }
+
   void addItem(String item, Map<String, dynamic> entry) {
     _inventoryMap[item] = entry;
     _inventoryList.writeInventory(jsonEncode(_inventoryMap));
