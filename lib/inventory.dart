@@ -1,7 +1,9 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'camera.dart';
+import 'chatbot.dart';
 import 'inventory_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -13,9 +15,9 @@ class Inventory extends StatefulWidget {
 }
 
 class _InventoryPage extends State<Inventory> {
+  bool _isPanelVisible = false;
   final InventoryManager _inventoryManager = InventoryManager();
   PanelController _pc = PanelController();
-  bool _isPanelVisible = false;
   String value = ''; // Initially set to an empty string
 
   @override
@@ -30,21 +32,34 @@ class _InventoryPage extends State<Inventory> {
       'assets/Card-2.png',
       'assets/Tamagotchi-2.png',
     ];
-    return images[index % images.length]; // Randomly pick an image from the list
+    return images[index % images.length]; 
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("SlidingUpPanelExample"),
+      ),
       body: SlidingUpPanel(
         renderPanelSheet: _isPanelVisible,
         backdropEnabled: true,
         controller: _pc,
         panel: Center(
-          child: value.isNotEmpty && _inventoryManager.test[value] != null
-              ? Text(_inventoryManager.test[value]!)
-              : const Text('Please select an item.'), // Fallback text if value is not set or null
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton(
+                onPressed: () async{
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const ChatBot(),));
+                },
+                child: const Text('ChatBot'),
+              ),
+              value.isNotEmpty && _inventoryManager.test[value] != null
+                  ? Text(_inventoryManager.test[value]!)
+                  : const Text('Please select an item.'),
+            ],
+          ),
         ),
         body: _body(),
         onPanelOpened: () {
@@ -83,62 +98,42 @@ class _InventoryPage extends State<Inventory> {
   Widget _body() {
     return Stack(
       children: [
-        // Background image
         Positioned.fill(
           child: Image.asset(
-            'assets/InventoryBackground.png', // Replace with your image path
-            fit: BoxFit.cover, // Ensures the image covers the entire background
+            'assets/fridgeBg.png', 
+            fit: BoxFit.cover, 
           ),
         ),
-        // Foreground content (GridView and other UI elements)
         Container(
           child: SafeArea(
             child: Column(
               children: [
                 SizedBox(height: 65,),
                 Expanded(
-                  child: GridView.builder(
+                  child: ListView.builder(
                     padding: const EdgeInsets.all(10),
-                    itemCount: _inventoryManager.inventoryItems.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
-                    itemBuilder: (context, index) {
+                    itemCount: (_inventoryManager.inventoryItems.length / 3).ceil(),
+                    itemBuilder: (context, rowIndex) {
+                      int startIndex = rowIndex * 3;
+                      int endIndex = min(startIndex + 3, _inventoryManager.inventoryItems.length);
+
                       return Column(
                         children: [
-                          Expanded(
-                            child: Stack(
-                              alignment: Alignment.center, // Centers the content in the Stack
-                              children: [
-                                // IconButton with a random image
-                                IconButton(
-                                  icon: Image.asset(_getRandomImage(index)), // Use random image for each button
-                                  iconSize: 100, // Adjust the icon size as needed
-                                  onPressed: () {
-                                    setState(() {
-                                      value = _inventoryManager.inventoryItems[index]; // Set value to the item string
-                                    });
-                                    _pc.open(); // Open the panel after setting the value
-                                  },
-                                ),
-                                // Text aligned to the center of the IconButton
-                                Positioned(
-                                  bottom: 22, // Adjust this to control the vertical position of the text
-                                  child: Text(
-                                    _inventoryManager.inventoryItems[index],
-                                    style: const TextStyle(
-                                      fontSize: 15, // Adjust the font size as needed
-                                      color: Colors.white, // Set the text color
-                                      fontWeight: FontWeight.bold, // Make the text bold
-                                      fontFamily: 'PixelifySans',
-                                    ),
-                                    textAlign: TextAlign.center, // Aligns the text to center
-                                  ),
-                                ),
-                              ],
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: List.generate(3, (index) {
+                              if (startIndex + index < endIndex) {
+                                return _buildInventoryItem(startIndex + index);
+                              } else {
+                                // put empty container when less than 3 to keep sizing consistent
+                                return _buildEmptyItem();
+                              }
+                            }),
+                          ),
+                          // fridge divider, replace with fridge bar image later
+                          Divider(
+                            color: Colors.grey,
+                            thickness: 2, 
                           ),
                         ],
                       );
@@ -150,6 +145,58 @@ class _InventoryPage extends State<Inventory> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildInventoryItem(int index) {
+    return Expanded(
+      child: Column(
+        children: [
+          Stack(
+            alignment: Alignment.center, 
+            children: [
+              IconButton(
+                icon: Image.asset(
+                  _getRandomImage(index),
+                  width: 100,
+                  height: 100, 
+                  fit: BoxFit.contain, 
+                ),
+                iconSize: 100, 
+                onPressed: () {
+                  setState(() {
+                    value = _inventoryManager.inventoryItems[index]; 
+                  });
+                  _pc.open(); 
+                },
+              ),
+              // Text aligned to the center of the IconButton
+              Positioned(
+                bottom: 22, // Adjust this to control the vertical position of the text
+                child: Text(
+                  _inventoryManager.inventoryItems[index],
+                  style: const TextStyle(
+                    fontSize: 15, // Adjust the font size as needed
+                    color: Colors.white, // Set the text color
+                    fontWeight: FontWeight.bold, // Make the text bold
+                  ),
+                  textAlign: TextAlign.center, // Aligns the text to center
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // add an empty item to fill up space in the row
+  Widget _buildEmptyItem() {
+    return Expanded(
+      child: Container(
+        width: 100,
+        height: 100,
+      ),
     );
   }
 }

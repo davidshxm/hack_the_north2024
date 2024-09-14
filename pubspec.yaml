@@ -69,6 +69,7 @@ flutter:
      - assets/PixelatedApple.png
      - assets/Tamagotchi-2.png
      - assets/PlusButton.png
+     - assets/fridgeBg.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
