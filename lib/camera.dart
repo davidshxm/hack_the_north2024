@@ -314,7 +314,8 @@ class _CameraState extends State<Camera> {
       ),
       body: SafeArea(
         child: Center(
-          child: Column(
+          child: Stack(
+          children: [Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
@@ -437,7 +438,7 @@ class _CameraState extends State<Camera> {
                 ),
               ],
             ],
-          ),
+          ), Positioned.fill(child: Image.asset('assets/UploadScreen.png'))])
         ),
       ),
     );
