@@ -29,8 +29,6 @@ Future<Meta> createMeta(String payload) async {
   }
 }
 
-
-
 Future<List<Nutrient>> createPopulatedNutrients(String payload) async {
   final response = await http.post(
     Uri.parse('http://10.37.100.33:3000/api/populate-nutrients'),
@@ -322,7 +320,8 @@ class _CameraState extends State<Camera> {
                     if (processing)
                       const Center(
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.orange), // Custom color
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.orange), // Custom color
                           strokeWidth: 5.0, // Adjust thickness
                         ),
                       )
@@ -398,48 +397,94 @@ class _CameraState extends State<Camera> {
                     child: TextButton(
                         onPressed:
                             isRecognizing ? null : _chooseImageSourceModal,
-                        child: Image.asset("assets/UploadButton.png",
+                        child: Image.asset("assets/LitUploadButton.png",
                             fit: BoxFit.fitWidth)))),
-            Positioned(
-                top: 458,
-                child: SizedBox(
-                    height: 140,
-                    width: 340,
-                    child: TextButton(
-                        onPressed: isAllStepsCompleted
-                            ? () => _goToInventory(product)
-                            : null,
-                        child: Image.asset("assets/InventoryButton.png",
-                            fit: BoxFit.fitWidth)))),
-            Positioned(
-                top: 564,
-                left: 10,
-                child: SizedBox(
-                    height: 140,
-                    width: 240,
-                    child: TextButton(
-                        onPressed:
-                            isAllStepsCompleted ? null : _skipCurrentStep,
-                        child: Image.asset("assets/SkipButton.png",
-                            fit: BoxFit.fitWidth)))),
-            Positioned(
-                top: 580,
-                left: 240,
-                child: SizedBox(
-                    height: 105,
-                    width: 105,
-                    child: TextButton(
-                        onPressed: !stepsCompleted[currentStep]
-                            ? null
-                            : () {
-                                setState(() {
-                                  if (currentStep < 2) {
-                                    currentStep++;
-                                  }
-                                });
-                              },
-                        child: Image.asset("assets/NextButton.png",
-                            fit: BoxFit.fitWidth)))),
+            if (isAllStepsCompleted)
+              Positioned(
+                  top: 458,
+                  child: SizedBox(
+                      height: 140,
+                      width: 340,
+                      child: TextButton(
+                          onPressed: isAllStepsCompleted
+                              ? () => _goToInventory(product)
+                              : null,
+                          child: Image.asset("assets/LitAddItemButton.png",
+                              fit: BoxFit.fitWidth))))
+            else
+              Positioned(
+                  top: 458,
+                  child: SizedBox(
+                      height: 140,
+                      width: 340,
+                      child: TextButton(
+                          onPressed: isAllStepsCompleted
+                              ? () => _goToInventory(product)
+                              : null,
+                          child: Image.asset("assets/AddItemButton.png",
+                              fit: BoxFit.fitWidth)))),
+            if (isAllStepsCompleted)
+              Positioned(
+                  top: 564,
+                  left: 10,
+                  child: SizedBox(
+                      height: 140,
+                      width: 240,
+                      child: TextButton(
+                          onPressed:
+                              isAllStepsCompleted ? null : _skipCurrentStep,
+                          child: Image.asset("assets/SkipButton.png",
+                              fit: BoxFit.fitWidth))))
+            else
+              Positioned(
+                  top: 564,
+                  left: 10,
+                  child: SizedBox(
+                      height: 140,
+                      width: 240,
+                      child: TextButton(
+                          onPressed:
+                              isAllStepsCompleted ? null : _skipCurrentStep,
+                          child: Image.asset("assets/LitSkipButton.png",
+                              fit: BoxFit.fitWidth)))),
+            if (pickedImagePaths[currentStep] == null || isAllStepsCompleted)
+              Positioned(
+                  top: 580,
+                  left: 240,
+                  child: SizedBox(
+                      height: 105,
+                      width: 105,
+                      child: TextButton(
+                          onPressed: !stepsCompleted[currentStep]
+                              ? null
+                              : () {
+                                  setState(() {
+                                    if (currentStep < 2) {
+                                      currentStep++;
+                                    }
+                                  });
+                                },
+                          child: Image.asset("assets/NextButton.png",
+                              fit: BoxFit.fitWidth))))
+            else
+              Positioned(
+                  top: 580,
+                  left: 240,
+                  child: SizedBox(
+                      height: 105,
+                      width: 105,
+                      child: TextButton(
+                          onPressed: !stepsCompleted[currentStep]
+                              ? null
+                              : () {
+                                  setState(() {
+                                    if (currentStep < 2) {
+                                      currentStep++;
+                                    }
+                                  });
+                                },
+                          child: Image.asset("assets/LitNextButton.png",
+                              fit: BoxFit.fitWidth))))
           ]),
         ),
       ),
