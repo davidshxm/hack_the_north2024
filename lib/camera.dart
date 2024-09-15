@@ -103,8 +103,8 @@ class _CameraState extends State<Camera> {
   late TextRecognizer textRecognizer;
   late ImagePicker imagePicker;
   Meta meta = Meta(label: "", name: "", description: "");
-  Product product =
-      Product(label: "", name: "", description: "", nutrients: [], ingredients: []);
+  Product product = Product(
+      label: "", name: "", description: "", nutrients: [], ingredients: []);
   String recognizedText = "";
   String recognizedNutrientText = "";
   String recognizedIngredientText = "";
@@ -314,130 +314,131 @@ class _CameraState extends State<Camera> {
       ),
       body: SafeArea(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              if (pickedImagePaths[currentStep] != null)
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child:
-                      ImagePreview(imagePath: pickedImagePaths[currentStep]!),
-                )
-              else
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: const Text('No image selected for this step'),
-                ),
-              // Display current step
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Text(
-                      'Step ${currentStep + 1} of 3',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
-                    ),
-                    const SizedBox(height: 10),
-                    LinearProgressIndicator(
-                      value: (currentStep + 1) / 3,
-                      minHeight: 5,
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      _getStepDescription(currentStep),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              ElevatedButton(
-                onPressed: isRecognizing ? null : _chooseImageSourceModal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text('Pick an image'),
-                    if (isRecognizing) ...[
-                      const SizedBox(width: 20),
-                      const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1.5,
+          child: Stack(alignment: Alignment.topCenter, children: [
+            Positioned.fill(
+                child:
+                    Image.asset("assets/UploadScreen.png", fit: BoxFit.fill)),
+            Positioned(
+              width: 250,
+              top: 60,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  if (pickedImagePaths[currentStep] != null)
+                    ImagePreview(imagePath: pickedImagePaths[currentStep]!),
+                  // Display current step
+                  if (pickedImagePaths[currentStep] == null)
+                    Column(
+                      children: [
+                        Text(
+                          'Step ${currentStep + 1} of 3',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20),
                         ),
-                      ),
-                    ],
-                  ],
-                ),
+                        const SizedBox(height: 10),
+                        LinearProgressIndicator(
+                          value: (currentStep + 1) / 3,
+                          minHeight: 5,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          _getStepDescription(currentStep),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  // if (!isRecognizing && recognizedText.isNotEmpty) ...[
+                  //   const Divider(),
+                  //   Padding(
+                  //     padding: const EdgeInsets.only(
+                  //         left: 16, right: 16, bottom: 16),
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //       children: [
+                  //         const Text(
+                  //           "Recognized Text",
+                  //           style: TextStyle(fontWeight: FontWeight.bold),
+                  //         ),
+                  //         IconButton(
+                  //           icon: const Icon(Icons.copy, size: 16),
+                  //           onPressed: _copyTextToClipboard,
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  //   Expanded(
+                  //     child: Scrollbar(
+                  //       child: SingleChildScrollView(
+                  //         padding: const EdgeInsets.all(16),
+                  //         child: Row(
+                  //           children: [
+                  //             Flexible(
+                  //               child: SelectableText(
+                  //                 recognizedText.isEmpty
+                  //                     ? "No text recognized"
+                  //                     : recognizedText,
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ],
+                ],
               ),
-              if (pickedImagePaths[currentStep] != null)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: !stepsCompleted[currentStep]
-                          ? null
-                          : () {
-                              setState(() {
-                                if (currentStep < 2) {
-                                  currentStep++;
-                                }
-                              });
-                            },
-                      child: const Text('Next'),
-                    ),
-                    const SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: isAllStepsCompleted ? null : _skipCurrentStep,
-                      child: const Text('Skip'),
-                    ),
-                  ],
-                ),
-              ElevatedButton(
-                onPressed: isAllStepsCompleted ? () => _goToInventory(product) : null,
-                child: const Text('Add to Inventory'),
-              ),
-              if (!isRecognizing && recognizedText.isNotEmpty) ...[
-                const Divider(),
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        "Recognized Text",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.copy, size: 16),
-                        onPressed: _copyTextToClipboard,
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Scrollbar(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Flexible(
-                            child: SelectableText(
-                              recognizedText.isEmpty
-                                  ? "No text recognized"
-                                  : recognizedText,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
+            ),
+            Positioned(
+                top: 342,
+                child: SizedBox(
+                    height: 140,
+                    width: 340,
+                    child: TextButton(
+                        onPressed:
+                            isRecognizing ? null : _chooseImageSourceModal,
+                        child: Image.asset("assets/UploadButton.png",
+                            fit: BoxFit.fitWidth)))),
+            Positioned(
+                top: 458,
+                child: SizedBox(
+                    height: 140,
+                    width: 340,
+                    child: TextButton(
+                        onPressed: isAllStepsCompleted
+                            ? () => _goToInventory(product)
+                            : null,
+                        child: Image.asset("assets/InventoryButton.png",
+                            fit: BoxFit.fitWidth)))),
+            Positioned(
+                top: 564,
+                left: 10,
+                child: SizedBox(
+                    height: 140,
+                    width: 240,
+                    child: TextButton(
+                        onPressed:
+                            isAllStepsCompleted ? null : _skipCurrentStep,
+                        child: Image.asset("assets/SkipButton.png",
+                            fit: BoxFit.fitWidth)))),
+            Positioned(
+                top: 580,
+                left: 240,
+                child: SizedBox(
+                    height: 105,
+                    width: 105,
+                    child: TextButton(
+                        onPressed: !stepsCompleted[currentStep]
+                            ? null
+                            : () {
+                                setState(() {
+                                  if (currentStep < 2) {
+                                    currentStep++;
+                                  }
+                                });
+                              },
+                        child: Image.asset("assets/NextButton.png",
+                            fit: BoxFit.fitWidth)))),
+          ]),
         ),
       ),
     );
