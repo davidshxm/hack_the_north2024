@@ -71,6 +71,10 @@ flutter:
      - assets/Tamagotchi-2.png
      - assets/PlusButton.png
      - assets/fridgeBg.png
+     - assets/Frame.png
+     - assets/NextButton.png
+     - assets/UploadButton.png
+     - assets/
      - assets/Card-Transparent.png
      - assets/GameBoy-Transparent.png
      - assets/Tamagotchi-Transparent.png

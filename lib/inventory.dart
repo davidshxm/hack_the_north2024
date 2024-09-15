@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
-import 'dart:convert';
-import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'chatbot.dart';
@@ -19,14 +17,14 @@ class _InventoryPage extends State<Inventory> {
   bool isNull = true;
   final InventoryManager _inventoryManager = InventoryManager();
   PanelController _pc = PanelController();
-  int Index = 0; // -1
+  int Index = 0;
+  String? selectedNutrient;
 
   @override
   void initState() {
     super.initState();
   }
 
-  // Function to select a random image
   String _getRandomImage(int index) {
     List<String> images = [
       'assets/GameBoy-Transparent.png',
@@ -40,151 +38,143 @@ class _InventoryPage extends State<Inventory> {
   Widget build(BuildContext context) {
     Map<String, dynamic> product = _inventoryManager
         .getEntryByName(_inventoryManager.getItemNameByIndex(Index));
-    // print(_inventoryManager.getItemCount());
-    // print(product['name']);
-    // print(product['description']);
-    // print(product['nutrients']);
-    // print(product['ingredients']);
 
-    // print(Index);
-    // dev.log(jsonEncode(product));
     return Scaffold(
       appBar: AppBar(
         title: Text("SlidingUpPanelExample"),
       ),
       body: SlidingUpPanel(
-        renderPanelSheet: _isPanelVisible,
-        backdropEnabled: true,
         controller: _pc,
+        backdropEnabled: true, // For a backdrop when the panel is opened
+        renderPanelSheet: true,
+        maxHeight: MediaQuery.of(context).size.height, // Full screen height
+        minHeight: 0, // Hide the panel when collapsed
         panel: Center(
-          heightFactor: 0.8,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) => ChatBot()));
-                      },
-                      child: Text(
-                        product['name'] ?? "",
-                      ),
-                    )),
-                Container(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => ChatBot()));
+          child: Column(
+            children: [
+              // Product name button
+              Container(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => ChatBot()));
+                  },
+                  child: Text(product['name'] ?? ""),
+                ),
+              ),
+
+              // Product description button
+              Container(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => ChatBot()));
+                  },
+                  child: Text(product['description'] ?? ""),
+                ),
+              ),
+              if (product['nutrients'] != null &&
+                  product['nutrients'].isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton<String>(
+                    hint: Text('Select a Nutrient'),
+                    value: selectedNutrient,
+                    isExpanded: true,
+                    items: product['nutrients']
+                        .map<DropdownMenuItem<String>>((nutrient) {
+                      String name = nutrient['name'];
+                      String value = nutrient['value'].toString();
+                      return DropdownMenuItem<String>(
+                        value: name,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(name,
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(value),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedNutrient = newValue;
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ChatBot(prompt: "Tell me more about $newValue"),
+                          ),
+                        );
+                      });
                     },
-                    child: Text(
-                      product['description'] ?? "",
-                    ),
                   ),
                 ),
-                Column(
-                  children: [
-                    if (!isNull)
-                      for (int index = 0;
-                          index < product['nutrients'].length;
-                          index++)
-                        Container(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ChatBot(
-                                          prompt:
-                                              "Tell me more about ${product['nutrients'][index]['name']}")));
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .start, // Align text to the left
-                              children: [
-                                Text(
-                                  product['nutrients'][index]['name'],
-                                  style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold), // Nutrient name
-                                ),
-                                SizedBox(height: 5), // Space between lines
-                                Text(
-                                  product['nutrients'][index]['value']
-                                      .toString(), // Nutrient description
-                                ),
-                              ],
-                            ),
-                          ),
+              // Dropdown to select nutrients with name and value side by side
+              if (product['ingredients'] != null &&
+                  product['ingredients'].isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton<String>(
+                    hint: Text('Select an Ingredient'),
+                    value: selectedNutrient,
+                    isExpanded: true,
+                    items: product['ingredients']
+                        .map<DropdownMenuItem<String>>((nutrient) {
+                      String name = nutrient['name'];
+                      String description = nutrient['description'];
+                      String rating = nutrient['rating'].toString();
+                      return DropdownMenuItem<String>(
+                        value: name,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(name,
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(description),
+                            Text(rating)
+                          ],
                         ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    if (!isNull)
-                      for (int index = 0;
-                          index < product['ingredients'].length;
-                          index++)
-                        Container(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => ChatBot(
-                                          prompt:
-                                              "Tell me more about ${product['ingredients'][index]['name']}")));
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment
-                                  .start, // Align text to the left
-                              children: [
-                                Text(
-                                  product['ingredients'][index]['name'],
-                                  style: TextStyle(
-                                      fontWeight:
-                                          FontWeight.bold), // Ingredient name
-                                ),
-                                SizedBox(height: 5), // Space between lines
-                                Text(
-                                  product['ingredients'][index]['value']
-                                      .toString(), // Ingredient description
-                                ),
-                              ],
-                            ),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedNutrient = newValue;
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ChatBot(prompt: "Tell me more about $newValue"),
                           ),
-                        ),
-                  ],
+                        );
+                      });
+                    },
+                  ),
                 ),
-              ],
-            ),
+            ],
           ),
         ),
         body: _body(),
         onPanelOpened: () {
           setState(() {
-            _isPanelVisible = true; // Set to true when the panel is opened
+            _isPanelVisible = true;
           });
         },
         onPanelClosed: () {
           setState(() {
-            _isPanelVisible = false; // Set to false when the panel is closed
+            _isPanelVisible = false;
           });
         },
       ),
       floatingActionButton: _isPanelVisible
-          ? null // Hide FAB when the panel is visible
+          ? null
           : FloatingActionButton(
               onPressed: () {
-                // Navigate to the camera page when clicked
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -193,12 +183,11 @@ class _InventoryPage extends State<Inventory> {
                 );
               },
               child: Image.asset('assets/PlusButton.png'),
-              elevation: 0, // Remove shadow
+              elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(60),
               ),
-              backgroundColor: Colors
-                  .transparent, // Make background transparent to remove border effect
+              backgroundColor: Colors.transparent,
             ),
     );
   }
@@ -236,12 +225,10 @@ class _InventoryPage extends State<Inventory> {
                               if (startIndex + index < endIndex) {
                                 return _buildInventoryItem(startIndex + index);
                               } else {
-                                // put empty container when less than 3 to keep sizing consistent
                                 return _buildEmptyItem();
                               }
                             }),
                           ),
-                          // fridge divider, replace with fridge bar image later
                           Divider(
                             color: Colors.grey,
                             thickness: 2,
@@ -317,7 +304,6 @@ class _InventoryPage extends State<Inventory> {
     );
   }
 
-  // add an empty item to fill up space in the row
   Widget _buildEmptyItem() {
     return Expanded(
       child: Container(
