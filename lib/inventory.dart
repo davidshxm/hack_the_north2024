@@ -34,6 +34,18 @@ class _InventoryPage extends State<Inventory> {
     return images[index % images.length];
   }
 
+  Color _getColor(int rating) {
+    if (rating >= 7) {
+      return Colors.green[100]!;
+    } else if (rating >= 5) {
+      return Colors.yellow[100]!;
+    } else if (rating >= 3) {
+      return Colors.orange[100]!;
+    } else {
+      return Colors.red[100]!;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> product = _inventoryManager
@@ -104,44 +116,66 @@ class _InventoryPage extends State<Inventory> {
               // Dropdown to select nutrients with name and value side by side
               if (product['ingredients'] != null &&
                   product['ingredients'].isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: DropdownButton<String>(
-                    hint: Text('Select an Ingredient'),
-                    value: selectedNutrient,
-                    isExpanded: true,
-                    items: product['ingredients']
-                        .map<DropdownMenuItem<String>>((nutrient) {
-                      String name = nutrient['name'];
-                      String description = nutrient['description'];
-                      String rating = nutrient['rating'].toString();
-                      return DropdownMenuItem<String>(
-                        value: name,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(name,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(description),
-                            Text(rating)
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedNutrient = newValue;
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ChatBot(prompt: "Tell me more about $newValue"),
-                          ),
-                        );
-                      });
-                    },
+                  SingleChildScrollView(
+                    child: DropdownButton<String>(
+                        hint: Text('Select an Ingredient'),
+                        value: selectedNutrient,
+                        isExpanded: true,
+                        itemHeight: 140,
+                        items: product['ingredients']
+                            .map<DropdownMenuItem<String>>((nutrient) {
+                          String name = nutrient['name'];
+                          String description = nutrient['description'];
+                          String rating = nutrient['rating'].toString();
+                          return DropdownMenuItem<String>(
+                            value: name,
+                            child: Container(
+                              height: 140,
+                              color: _getColor(int.parse(rating)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        flex: 6,
+                                        child: Text(name,
+                                            style: TextStyle(fontWeight: FontWeight.bold)),
+                                      ),
+                                      Expanded(
+                                        flex: 4,
+                                        child: Image.asset("assets/" + rating + "0PercentBar.png",
+                                          width: 100,
+                                          height: 20,
+                                        ),)
+                                    ],
+                                  ),
+                                  
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                    child: Text(description),
+                                  ),
+                                ],
+                            ),))
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedNutrient = newValue;
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ChatBot(prompt: "Tell me more about $newValue"),
+                              ),
+                            );
+                          });
+                        },)
                   ),
-                ),
+                
             ],
           ),
         ),
