@@ -41,9 +41,12 @@ Future<List<Nutrient>> createPopulatedNutrients(String payload) async {
   );
 
   if (response.statusCode == 200) {
+    String text = jsonDecode(response.body)['response']['text'];
+    int start = text.indexOf('[');
+    int end = text.lastIndexOf(']') + 1;
+    text = text.substring(start, end);
     return List<Nutrient>.from(
-        jsonDecode(jsonDecode(response.body)['response']['text'])
-            .map((x) => Nutrient.fromJson(x)));
+        jsonDecode(text).map((x) => Nutrient.fromJson(x)));
   } else {
     throw Exception('Failed to create product');
   }
@@ -61,9 +64,12 @@ Future<List<Ingredient>> createPopulatedIngredients(String payload) async {
   );
 
   if (response.statusCode == 200) {
+    String text = jsonDecode(response.body)['response']['text'];
+    int start = text.indexOf('[');
+    int end = text.lastIndexOf(']') + 1;
+    text = text.substring(start, end);
     return List<Ingredient>.from(
-        jsonDecode(jsonDecode(response.body)['response']['text'])
-            .map((x) => Ingredient.fromJson(x)));
+        jsonDecode(text).map((x) => Ingredient.fromJson(x)));
   } else {
     throw Exception('Failed to create product');
   }
@@ -302,7 +308,7 @@ class _CameraState extends State<Camera> {
   ) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ML Text Recognition'),
+        title: const Text('Add Bite'),
       ),
       body: SafeArea(
         child: Center(
