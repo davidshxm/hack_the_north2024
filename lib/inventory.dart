@@ -44,37 +44,23 @@ class _InventoryPage extends State<Inventory> {
       ),
       body: SlidingUpPanel(
         controller: _pc,
-        backdropEnabled: true, // For a backdrop when the panel is opened
+        backdropEnabled: true,
+        // For a backdrop when the panel is opened
         renderPanelSheet: true,
-        maxHeight: MediaQuery.of(context).size.height, // Full screen height
-        minHeight: 0, // Hide the panel when collapsed
+        maxHeight: MediaQuery.of(context).size.height,
+        // Full screen height
+        minHeight: 0,
+        // Hide the panel when collapsed
         panel: Center(
           child: Column(
             children: [
               // Product name button
               Container(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => ChatBot()));
-                  },
-                  child: Text(product['name'] ?? ""),
-                ),
+                child: Text(product['name'] ?? ""),
               ),
-
               // Product description button
               Container(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => ChatBot()));
-                  },
-                  child: Text(product['description'] ?? ""),
-                ),
+                child: Text(product['description'] ?? ""),
               ),
               if (product['nutrients'] != null &&
                   product['nutrients'].isNotEmpty)
