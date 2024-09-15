@@ -28,27 +28,7 @@ Future<Meta> createMeta(String payload) async {
   }
 }
 
-Future<CleanData> createCleanData(String payload) async {
-  final response = await http.post(
-    Uri.parse('http://10.37.100.33:3000/api/clean'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'payload': payload,
-    }),
-  );
 
-  if (response.statusCode == 200) {
-    return CleanData.fromJson(
-        jsonDecode(response.body) as Map<String, dynamic>);
-  } else {
-    print(payload);
-    print(response.statusCode);
-    print(response.body);
-    throw Exception(response.body);
-  }
-}
 
 Future<List<Nutrient>> createPopulatedNutrients(String payload) async {
   final response = await http.post(
@@ -66,7 +46,6 @@ Future<List<Nutrient>> createPopulatedNutrients(String payload) async {
         jsonDecode(jsonDecode(response.body)['response']['text'])
             .map((x) => Nutrient.fromJson(x)));
   } else {
-    print(response.body);
     throw Exception('Failed to create product');
   }
 }
@@ -87,7 +66,6 @@ Future<List<Ingredient>> createPopulatedIngredients(String payload) async {
         jsonDecode(jsonDecode(response.body)['response']['text'])
             .map((x) => Ingredient.fromJson(x)));
   } else {
-    print(response.body);
     throw Exception('Failed to create product');
   }
 }
@@ -121,7 +99,7 @@ class _CameraState extends State<Camera> {
     false,
     false
   ]; // Tracks whether each step is done or skipped
-
+  bool processing = false;
   bool isRecognizing = false;
   int currentStep =
       0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Product picture)
@@ -171,14 +149,22 @@ class _CameraState extends State<Camera> {
           });
           break;
         case 2:
+          setState(() {
+            processing = true;
+          });
+          print("going");
           final results = await Future.wait([
             createPopulatedNutrients(recognizedNutrientText),
             createPopulatedIngredients(recognizedText)
           ]);
+          setState(() {
+            processing = false;
+          });
+          print("done");
           Product p = Product(
               label: meta.label,
               name: meta.name,
-              imagePath: "",
+              imagePath: pickedImage.path,
               description: meta.description,
               nutrients: results[0] as List<Nutrient>,
               ingredients: results[1] as List<Ingredient>);
@@ -237,7 +223,7 @@ class _CameraState extends State<Camera> {
         );
       },
     );
-
+    print(productName);
     // Add new item to inventory and navigate to Inventory page
     if (productName != null && productName.isNotEmpty) {
       final inventoryManager = InventoryManager();
@@ -300,11 +286,11 @@ class _CameraState extends State<Camera> {
   String _getStepDescription(int step) {
     switch (step) {
       case 0:
-        return "Step 1: Capture the Nutritional Label of the product. This label provides information about the nutrients present in the product.";
-      case 1:
-        return "Step 2: Capture the Ingredients List of the product. This list shows the components used in the product.";
-      case 2:
         return "Step 3: Capture a photo of the product. This image will be used to identify and verify the product.";
+      case 1:
+        return "Step 2: Capture the Nutritional Label of the product. This label provides information about the nutrients present in the product.";
+      case 2:
+        return "Step 3: Capture the Ingredients List of the product. This list shows the components used in the product.";
       default:
         return "";
     }
@@ -331,7 +317,15 @@ class _CameraState extends State<Camera> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   if (pickedImagePaths[currentStep] != null)
-                    ImagePreview(imagePath: pickedImagePaths[currentStep]!),
+                    if (processing)
+                      const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.orange), // Custom color
+                          strokeWidth: 5.0, // Adjust thickness
+                        ),
+                      )
+                    else
+                      ImagePreview(imagePath: pickedImagePaths[currentStep]!),
                   // Display current step
                   if (pickedImagePaths[currentStep] == null)
                     Column(
