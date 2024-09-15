@@ -169,11 +169,11 @@ class _CameraState extends State<Camera> {
           Product p = Product(
               label: meta.label,
               name: meta.name,
-              imagePath: pickedImage.path,
+              imagePath: pickedImagePaths[0]!,
               description: meta.description,
               nutrients: results[0] as List<Nutrient>,
               ingredients: results[1] as List<Ingredient>);
-          log(jsonEncode(p.toJson()));
+          // log(jsonEncode(p.toJson()));
           setState(() {
             product = p;
           });
@@ -229,7 +229,6 @@ class _CameraState extends State<Camera> {
         );
       },
     );
-    print(productName);
     // Add new item to inventory and navigate to Inventory page
     if (productName != null && productName.isNotEmpty) {
       final inventoryManager = InventoryManager();

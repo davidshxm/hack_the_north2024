@@ -19,6 +19,7 @@ class _InventoryPage extends State<Inventory> {
   PanelController _pc = PanelController();
   int Index = 0;
   String? selectedNutrient;
+  String? selectedIngredient;
 
   @override
   void initState() {
@@ -118,7 +119,8 @@ class _InventoryPage extends State<Inventory> {
                     value: selectedNutrient,
                     isExpanded: true,
                     itemHeight: 140,
-                    items: product['nutrients']
+                    items: 
+                    product['nutrients']
                         .map<DropdownMenuItem<String>>((nutrient) {
                       String name = nutrient['name'];
                       String value = nutrient['value'].toString();
@@ -191,7 +193,7 @@ class _InventoryPage extends State<Inventory> {
                           hint: Padding(
                           padding: const EdgeInsets.all(20.0),
                           child: Text('Select a Ingredients')),
-                          value: selectedNutrient,
+                          value: selectedIngredient,
                           isExpanded: true,
                           itemHeight: 140,
                           items: product['ingredients']
@@ -233,10 +235,10 @@ class _InventoryPage extends State<Inventory> {
                                   ],
                               ),))
                             );
-                          }).toList(),
+                          }).toList(), 
                           onChanged: (String? newValue) {
                             setState(() {
-                              selectedNutrient = newValue;
+                              selectedIngredient = newValue;
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
@@ -378,7 +380,7 @@ class _InventoryPage extends State<Inventory> {
                 },
               ),
               Positioned(
-                bottom: 22,
+                bottom: 27,
                 child: Text(
                   _inventoryManager.getItemLabelByIndex(index),
                   style: const TextStyle(

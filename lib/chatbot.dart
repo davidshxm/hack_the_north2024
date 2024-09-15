@@ -120,7 +120,7 @@ class _ChatBot extends State<ChatBot> {
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.all(8.0),
-              reverse: true,
+              reverse: false,
               itemCount: _messages.length,
               itemBuilder: (BuildContext context, int index) {
                 final message = _messages[index];
