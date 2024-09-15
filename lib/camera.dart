@@ -138,7 +138,6 @@ class _CameraState extends State<Camera> {
 
     setState(() {
       pickedImagePaths[currentStep] = pickedImage.path;
-      stepsCompleted[currentStep] = true;
       isRecognizing = true;
     });
 
@@ -199,14 +198,12 @@ class _CameraState extends State<Camera> {
 
   void _skipCurrentStep() {
     setState(() {
-      stepsCompleted[currentStep] = true; // Mark step as completed (skipped)
+      stepsCompleted[currentStep] = false; // Mark step as completed (skipped)
       if (currentStep < 2) {
         currentStep++;
       }
     });
   }
-
-  bool get isAllStepsCompleted => stepsCompleted.every((step) => step);
 
   void _goToInventory(data) async {
     // Show popup to enter product name
@@ -375,31 +372,32 @@ class _CameraState extends State<Camera> {
                   ],
                 ),
               ),
-              if (pickedImagePaths[currentStep] != null)
+              if (currentStep != 2) 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: !stepsCompleted[currentStep]
+                      onPressed:  (pickedImagePaths[currentStep] == null)
                           ? null
                           : () {
                               setState(() {
                                 if (currentStep < 2) {
                                   currentStep++;
                                 }
+
                               });
                             },
                       child: const Text('Next'),
                     ),
                     const SizedBox(width: 16),
                     ElevatedButton(
-                      onPressed: isAllStepsCompleted ? null : _skipCurrentStep,
+                      onPressed: currentStep >= 2 ? null : _skipCurrentStep,
                       child: const Text('Skip'),
                     ),
                   ],
                 ),
               ElevatedButton(
-                onPressed: isAllStepsCompleted ? () => _goToInventory(product) : null,
+                onPressed: pickedImagePaths[2] != null ? () => _goToInventory(product) : null,
                 child: const Text('Add to Inventory'),
               ),
               if (!isRecognizing && recognizedText.isNotEmpty) ...[
