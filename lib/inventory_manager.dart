@@ -21,13 +21,19 @@ class InventoryManager {
     return _instance;
   }
 
+    final List<String> _inventoryImages = [];
+    List<String> get inventoryImages => List.unmodifiable(_inventoryImages);
+
+
   void removeItem(String item) {
     _inventoryMap.remove(item);
     _inventoryList.writeInventory(jsonEncode(_inventoryMap));
   }
 
-  void addItem(String item, Map<String, dynamic> entry) {
+  void addItem(String item, Map<String, dynamic> entry, String imagePath) {
     _inventoryMap[item] = entry;
+        _inventoryImages.add(imagePath);
+
     _inventoryList.writeInventory(jsonEncode(_inventoryMap));
   }
 

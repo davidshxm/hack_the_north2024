@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -26,9 +27,9 @@ class _InventoryPage extends State<Inventory> {
 
   String _getRandomImage(int index) {
     List<String> images = [
-      'assets/GameBoy-2.png',
-      'assets/Card-2.png',
-      'assets/Tamagotchi-2.png',
+      'assets/GameBoy-Transparent.png',
+      'assets/Card-Transparent.png',
+      'assets/Tamagotchi-Transparent.png',
     ];
     return images[index % images.length];
   }
@@ -56,37 +57,23 @@ class _InventoryPage extends State<Inventory> {
       ),
       body: SlidingUpPanel(
         controller: _pc,
-        backdropEnabled: true, // For a backdrop when the panel is opened
+        backdropEnabled: true,
+        // For a backdrop when the panel is opened
         renderPanelSheet: true,
-        maxHeight: MediaQuery.of(context).size.height, // Full screen height
-        minHeight: 0, // Hide the panel when collapsed
+        maxHeight: MediaQuery.of(context).size.height,
+        // Full screen height
+        minHeight: 0,
+        // Hide the panel when collapsed
         panel: Center(
           child: Column(
             children: [
               // Product name button
               Container(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => ChatBot()));
-                  },
-                  child: Text(product['name'] ?? ""),
-                ),
+                child: Text(product['name'] ?? ""),
               ),
-
               // Product description button
               Container(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => ChatBot()));
-                  },
-                  child: Text(product['description'] ?? ""),
-                ),
+                child: Text(product['description'] ?? ""),
               ),
               if (product['nutrients'] != null &&
                   product['nutrients'].isNotEmpty)
@@ -286,6 +273,22 @@ class _InventoryPage extends State<Inventory> {
           Stack(
             alignment: Alignment.center,
             children: [
+              if (_inventoryManager.inventoryImages.length > index &&
+                  _inventoryManager.inventoryImages[index].isNotEmpty)
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  right: 10,
+                  bottom: 10,
+                  child: Image.file(
+                    File(_inventoryManager.inventoryImages[index]),
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+
+              // IconButton for the original icon background (gameboy, card, etc.)
               IconButton(
                 icon: Image.asset(
                   _getRandomImage(index),
@@ -307,7 +310,7 @@ class _InventoryPage extends State<Inventory> {
                 child: Text(
                   _inventoryManager.getItemLabelByIndex(index),
                   style: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 13,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'PixelifySans'),
