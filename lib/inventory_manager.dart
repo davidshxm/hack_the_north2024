@@ -43,15 +43,6 @@ class InventoryManager {
     return _inventoryMap.length;
   }
 
-  dynamic getItemImageByIndex(int index) {
-    if (index < 0 || index >= _inventoryMap.length) {
-      return "";
-    }
-    final String imagePath = _inventoryMap[index]['imagePath'];
-    final inputImage = InputImage.fromFilePath(imagePath);
-    return inputImage;
-  }
-
   String getItemNameByIndex(int index) {
     if (index < 0 || index >= _inventoryMap.length) {
       return "";

@@ -338,7 +338,11 @@ class _CameraState extends State<Camera> {
               else
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: const Text('No image selected for this step'),
+                  child: Text(currentStep == 0
+                      ? 'Upload product image'
+                      : currentStep == 1
+                          ? 'Upload nutrition facts'
+                          : 'Upload ingredients list'),
                 ),
               // Display current step
               Padding(
