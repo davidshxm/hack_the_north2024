@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -26,9 +27,9 @@ class _InventoryPage extends State<Inventory> {
 
   String _getRandomImage(int index) {
     List<String> images = [
-      'assets/GameBoy-2.png',
-      'assets/Card-2.png',
-      'assets/Tamagotchi-2.png',
+      'assets/GameBoy-Transparent.png',
+      'assets/Card-Transparent.png',
+      'assets/Tamagotchi-Transparent.png',
     ];
     return images[index % images.length];
   }
@@ -238,6 +239,22 @@ class _InventoryPage extends State<Inventory> {
           Stack(
             alignment: Alignment.center,
             children: [
+              if (_inventoryManager.inventoryImages.length > index &&
+                  _inventoryManager.inventoryImages[index].isNotEmpty)
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  right: 10,
+                  bottom: 10,
+                  child: Image.file(
+                    File(_inventoryManager.inventoryImages[index]),
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+
+              // IconButton for the original icon background (gameboy, card, etc.)
               IconButton(
                 icon: Image.asset(
                   _getRandomImage(index),
@@ -259,7 +276,7 @@ class _InventoryPage extends State<Inventory> {
                 child: Text(
                   _inventoryManager.getItemLabelByIndex(index),
                   style: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 13,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'PixelifySans'),

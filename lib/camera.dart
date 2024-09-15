@@ -191,13 +191,6 @@ class _CameraState extends State<Camera> {
       setState(() {
         isRecognizing = false;
       });
-
-      // Move to next step
-      if (currentStep < 2) {
-        setState(() {
-          currentStep++;
-        });
-      }
     }
   }
 
@@ -242,7 +235,10 @@ class _CameraState extends State<Camera> {
     // Add new item to inventory and navigate to Inventory page
     if (productName != null && productName.isNotEmpty) {
       final inventoryManager = InventoryManager();
-      inventoryManager.addItem(productName, data.toJson());
+      String? imagePath = pickedImagePaths[2];
+      if (imagePath != null) {
+        inventoryManager.addItem(productName, data.toJson(), imagePath);
+      }
 
       Navigator.pushReplacement(
         context,
@@ -295,6 +291,19 @@ class _CameraState extends State<Camera> {
     }
   }
 
+  String _getStepDescription(int step) {
+    switch (step) {
+      case 0:
+        return "Step 1: Capture the Nutritional Label of the product. This label provides information about the nutrients present in the product.";
+      case 1:
+        return "Step 2: Capture the Ingredients List of the product. This list shows the components used in the product.";
+      case 2:
+        return "Step 3: Capture a photo of the product. This image will be used to identify and verify the product.";
+      default:
+        return "";
+    }
+  }
+
   @override
   Widget build(
     BuildContext context,
@@ -323,9 +332,24 @@ class _CameraState extends State<Camera> {
               // Display current step
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Step ${currentStep + 1} of 3',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                child: Column(
+                  children: [
+                    Text(
+                      'Step ${currentStep + 1} of 3',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                    const SizedBox(height: 10),
+                    LinearProgressIndicator(
+                      value: (currentStep + 1) / 3,
+                      minHeight: 5,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      _getStepDescription(currentStep),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
               ElevatedButton(
@@ -347,13 +371,32 @@ class _CameraState extends State<Camera> {
                   ],
                 ),
               ),
-              ElevatedButton(
-                onPressed: isAllStepsCompleted ? null : _skipCurrentStep,
-                child: const Text('Skip'),
-              ),
+              if (pickedImagePaths[currentStep] != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: !stepsCompleted[currentStep]
+                          ? null
+                          : () {
+                              setState(() {
+                                if (currentStep < 2) {
+                                  currentStep++;
+                                }
+                              });
+                            },
+                      child: const Text('Next'),
+                    ),
+                    const SizedBox(width: 16),
+                    ElevatedButton(
+                      onPressed: isAllStepsCompleted ? null : _skipCurrentStep,
+                      child: const Text('Skip'),
+                    ),
+                  ],
+                ),
               ElevatedButton(
                 onPressed: isAllStepsCompleted ? () => _goToInventory(product) : null,
-                child: const Text('Go to Inventory'),
+                child: const Text('Add to Inventory'),
               ),
               if (!isRecognizing && recognizedText.isNotEmpty) ...[
                 const Divider(),

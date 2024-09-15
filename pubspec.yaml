@@ -75,6 +75,10 @@ flutter:
      - assets/NextButton.png
      - assets/UploadButton.png
      - assets/
+     - assets/Card-Transparent.png
+     - assets/GameBoy-Transparent.png
+     - assets/Tamagotchi-Transparent.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
