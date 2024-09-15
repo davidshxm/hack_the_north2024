@@ -39,6 +39,14 @@ class _InventoryPage extends State<Inventory> {
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> product = _inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index));
+    // print(_inventoryManager.getItemCount());
+    // print(product['name']);
+    // print(product['description']);
+    // print(product['nutrients']);
+    // print(product['ingredients']);
+
+    // print(Index);
+    // dev.log(jsonEncode(product));
     return Scaffold(
       appBar: AppBar(
         title: Text("SlidingUpPanelExample"),
@@ -47,141 +55,100 @@ class _InventoryPage extends State<Inventory> {
         renderPanelSheet: _isPanelVisible,
         backdropEnabled: true,
         controller: _pc,
-        panel: _buildPanelContent(context),
+        panel: Center(
+          heightFactor: 0.8,
+          child: SingleChildScrollView(
+          child: Column(
+            children: [Container(
+                    width: double.infinity,
+                      height: 50,
+                      child: 
+                  
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => ChatBot()));
+                },
+                child: Text(product['name'] ?? "",),
+              )),Container(
+                    width: double.infinity,
+                      height: 50,
+                      child: 
+                  
+              ElevatedButton(
+                onPressed: (){
+                  Navigator.pushReplacement(
+                      context, MaterialPageRoute(builder: (context) => ChatBot()));
+                },
+                child: Text(product['description'] ?? "",),
+              ),),
+              Column(
+                children: [
+                  if(!isNull)
+                  for (int index = 0; index < product['nutrients'].length; index++)
+                  Container(
+                    width: double.infinity,
+                      height: 50,
+                      child: 
+                  
+                    ElevatedButton(
+                      
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                            context, MaterialPageRoute(builder: (context) => ChatBot(prompt: "Tell me more about ${product['nutrients'][index]['name']}")));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
+                        children: [
+                          Text(product['nutrients'][index]['name'],
+                            style: TextStyle(fontWeight: FontWeight.bold), // Nutrient name
+                          ),
+                          SizedBox(height: 5), // Space between lines
+                          Text(product['nutrients'][index]['value'].toString(), // Nutrient description
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          ),
+        ),
         body: _body(),
         onPanelOpened: () {
-          _isPanelVisible = true;
+          setState(() {
+            _isPanelVisible = true; // Set to true when the panel is opened
+          });
         },
         onPanelClosed: () {
-          _isPanelVisible = false;
+          setState(() {
+            _isPanelVisible = false; // Set to false when the panel is closed
+          });
         },
       ),
       floatingActionButton: _isPanelVisible
           ? null // Hide FAB when the panel is visible
           : FloatingActionButton(
               onPressed: () {
+                // Navigate to the camera page when clicked
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Camera()),
+                  MaterialPageRoute(
+                    builder: (context) => Camera(),
+                  ),
                 );
               },
               child: Image.asset('assets/PlusButton.png'),
-              elevation: 0,
+              elevation: 0, // Remove shadow
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(60),
               ),
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors
+                  .transparent, // Make background transparent to remove border effect
             ),
     );
-  }
-
-  Widget _buildPanelContent(BuildContext context) {
-    return SingleChildScrollView(
-      child: ListView(
-        children: [
-          _buildFullWidthButton(
-            context,
-            text: product['name'] ?? "",
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => ChatBot()),
-              );
-            },
-          ),
-          _buildFullWidthButton(
-            context,
-            text: product['description'] ?? "",
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => ChatBot()),
-              );
-            },
-          ),
-          _buildExpandableSection(
-            title: "Nutrients",
-            items: product['nutrients'],
-            onPressed: (index) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ChatBot(
-                          prompt: "Tell me more about ${product['nutrients'][index]['name']}",
-                        )),
-              );
-            },
-          ),
-          _buildExpandableSection(
-            title: "Ingredients",
-            items: product['ingredients'],
-            onPressed: (index) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ChatBot(
-                          prompt: "Tell me more about ${product['ingredients'][index]['name']}",
-                        )),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFullWidthButton(BuildContext context, {required String text, required VoidCallback onPressed}) {
-    return ListTile(
-      leading: GestureDetector(
-    behavior: HitTestBehavior.translucent,
-    onTap: () {},
-    child: Container(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        child: Text(text),
-      ),
-    ),));
-  }
-
-  Widget _buildExpandableSection({
-    required String title,
-    required List<Map<String, dynamic>> items,
-    required Function(int) onPressed,
-  }) {
-    return ExpansionTile(
-        title: Text(
-          title,
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        children: [
-          for (int index = 0; index < items.length; index++)
-            ListTile(
-              leading: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {},
-              child: Container(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () => onPressed(index),
-                child: ListTile(
-                  leading: Container(
-                    children: [
-                    Text(
-                      items[index]['name'],
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 5),
-                    Text(items[index]['value'].toString()),
-                  ],
-                  )
-              ),
-            ),))
-            )
-        ],
-      ),
   }
 
   Widget _body() {
