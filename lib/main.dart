@@ -19,6 +19,7 @@ class ScanBite extends StatelessWidget {
         useMaterial3: true,
       ),
       home: Inventory(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

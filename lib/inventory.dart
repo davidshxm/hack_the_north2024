@@ -135,7 +135,8 @@ class _InventoryPage extends State<Inventory> {
                                 child: Padding(
                                   padding: const EdgeInsets.all(12.0),
                                   child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -149,7 +150,7 @@ class _InventoryPage extends State<Inventory> {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                      child: Text(description),
+                                      child: Text(description, style: TextStyle(fontSize: 12)),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -157,14 +158,14 @@ class _InventoryPage extends State<Inventory> {
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Text(_getWarning(measure, type),
-                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                           ),
                                           if (_getWarning(measure, type) != "")
                                             SizedBox(width: 10),
                                             if (_getWarning(measure, type) == "More recommended")
-                                              Icon(Icons.thumb_up, color: Colors.green)
+                                              Icon(Icons.thumb_up, color: Colors.green, size: 16)
                                             else if (_getWarning(measure, type) == "Excessive consumption")
-                                              Icon(Icons.warning, color: Colors.red)
+                                              Icon(Icons.warning, color: Colors.red, size: 16)
                                         ],
                                       ),
                                     ),
@@ -230,7 +231,7 @@ class _InventoryPage extends State<Inventory> {
                                     
                                     Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                      child: Text(description),
+                                      child: Text(description, style: TextStyle(fontSize: 12)),
                                     ),
                                   ],
                               ),))
