@@ -1,24 +1,25 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
-
+import 'dart:convert';
+import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'camera.dart';
+import 'chatbot.dart';
 import 'inventory_manager.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class Inventory extends StatefulWidget {
-  const Inventory({super.key});
-
   @override
   State<StatefulWidget> createState() => _InventoryPage();
 }
 
 class _InventoryPage extends State<Inventory> {
+  bool _isPanelVisible = false;
+  bool isNull = true;
   final InventoryManager _inventoryManager = InventoryManager();
   PanelController _pc = PanelController();
-  bool _isPanelVisible = false;
-  String value = ''; // Initially set to an empty string
+  int Index = 0; // -1
 
   @override
   void initState() {
@@ -32,21 +33,140 @@ class _InventoryPage extends State<Inventory> {
       'assets/Card-Transparent.png',
       'assets/Tamagotchi-Transparent.png',
     ];
-    return images[index % images.length]; 
+    return images[index % images.length];
   }
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> product = _inventoryManager
+        .getEntryByName(_inventoryManager.getItemNameByIndex(Index));
+    // print(_inventoryManager.getItemCount());
+    // print(product['name']);
+    // print(product['description']);
+    // print(product['nutrients']);
+    // print(product['ingredients']);
+
+    // print(Index);
+    // dev.log(jsonEncode(product));
     return Scaffold(
-      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("SlidingUpPanelExample"),
+      ),
       body: SlidingUpPanel(
         renderPanelSheet: _isPanelVisible,
         backdropEnabled: true,
         controller: _pc,
         panel: Center(
-          child: value.isNotEmpty && _inventoryManager.test[value] != null
-              ? Text(_inventoryManager.test[value]!)
-              : const Text('Please select an item.'), // Fallback text if value is not set or null
+          heightFactor: 0.8,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => ChatBot()));
+                      },
+                      child: Text(
+                        product['name'] ?? "",
+                      ),
+                    )),
+                Container(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) => ChatBot()));
+                    },
+                    child: Text(
+                      product['description'] ?? "",
+                    ),
+                  ),
+                ),
+                Column(
+                  children: [
+                    if (!isNull)
+                      for (int index = 0;
+                          index < product['nutrients'].length;
+                          index++)
+                        Container(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatBot(
+                                          prompt:
+                                              "Tell me more about ${product['nutrients'][index]['name']}")));
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment
+                                  .start, // Align text to the left
+                              children: [
+                                Text(
+                                  product['nutrients'][index]['name'],
+                                  style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold), // Nutrient name
+                                ),
+                                SizedBox(height: 5), // Space between lines
+                                Text(
+                                  product['nutrients'][index]['value']
+                                      .toString(), // Nutrient description
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    if (!isNull)
+                      for (int index = 0;
+                          index < product['ingredients'].length;
+                          index++)
+                        Container(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ChatBot(
+                                          prompt:
+                                              "Tell me more about ${product['ingredients'][index]['name']}")));
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment
+                                  .start, // Align text to the left
+                              children: [
+                                Text(
+                                  product['ingredients'][index]['name'],
+                                  style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold), // Ingredient name
+                                ),
+                                SizedBox(height: 5), // Space between lines
+                                Text(
+                                  product['ingredients'][index]['value']
+                                      .toString(), // Ingredient description
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
         body: _body(),
         onPanelOpened: () {
@@ -63,22 +183,23 @@ class _InventoryPage extends State<Inventory> {
       floatingActionButton: _isPanelVisible
           ? null // Hide FAB when the panel is visible
           : FloatingActionButton(
-        onPressed: () async {
-          // Navigate to the camera page when clicked
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const Camera(),
+              onPressed: () {
+                // Navigate to the camera page when clicked
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Camera(),
+                  ),
+                );
+              },
+              child: Image.asset('assets/PlusButton.png'),
+              elevation: 0, // Remove shadow
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(60),
+              ),
+              backgroundColor: Colors
+                  .transparent, // Make background transparent to remove border effect
             ),
-          );
-        },
-        child: Image.asset('assets/PlusButton.png'),
-        elevation: 0, // Remove shadow
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30), // Adjust the border radius if needed
-        ),
-        backgroundColor: Colors.transparent, // Make background transparent to remove border effect
-      ),
     );
   }
 
@@ -87,22 +208,25 @@ class _InventoryPage extends State<Inventory> {
       children: [
         Positioned.fill(
           child: Image.asset(
-            'assets/fridgeBg.png', 
-            fit: BoxFit.cover, 
+            'assets/fridgeBg.png',
+            fit: BoxFit.cover,
           ),
         ),
         Container(
           child: SafeArea(
             child: Column(
               children: [
-                SizedBox(height: 65,),
+                SizedBox(
+                  height: 65,
+                ),
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(10),
-                    itemCount: (_inventoryManager.inventoryItems.length / 3).ceil(),
+                    itemCount: (_inventoryManager.getItemCount() / 3).ceil(),
                     itemBuilder: (context, rowIndex) {
                       int startIndex = rowIndex * 3;
-                      int endIndex = min(startIndex + 3, _inventoryManager.inventoryItems.length);
+                      int endIndex =
+                          min(startIndex + 3, _inventoryManager.getItemCount());
 
                       return Column(
                         children: [
@@ -120,7 +244,7 @@ class _InventoryPage extends State<Inventory> {
                           // fridge divider, replace with fridge bar image later
                           Divider(
                             color: Colors.grey,
-                            thickness: 2, 
+                            thickness: 2,
                           ),
                         ],
                       );
@@ -134,62 +258,64 @@ class _InventoryPage extends State<Inventory> {
       ],
     );
   }
+
   Widget _buildInventoryItem(int index) {
-  return Expanded(
-    child: Column(
-      children: [
-        Stack(
-          alignment: Alignment.center, 
-          children: [
-            if (_inventoryManager.inventoryImages.length > index &&
-                _inventoryManager.inventoryImages[index].isNotEmpty)
+    return Expanded(
+      child: Column(
+        children: [
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              if (_inventoryManager.inventoryImages.length > index &&
+                  _inventoryManager.inventoryImages[index].isNotEmpty)
+                Positioned(
+                  top: 10,
+                  left: 10,
+                  right: 10,
+                  bottom: 10,
+                  child: Image.file(
+                    File(_inventoryManager.inventoryImages[index]),
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+
+              // IconButton for the original icon background (gameboy, card, etc.)
+              IconButton(
+                icon: Image.asset(
+                  _getRandomImage(index),
+                  width: 120,
+                  height: 120,
+                  fit: BoxFit.contain,
+                ),
+                iconSize: 100,
+                onPressed: () {
+                  setState(() {
+                    isNull = false;
+                    Index = index;
+                  });
+                  _pc.open();
+                },
+              ),
               Positioned(
-                top: 10, 
-                left: 10,
-                right: 10,
-                bottom: 10,
-                child: Image.file(
-                  File(_inventoryManager.inventoryImages[index]),
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.contain, 
+                bottom: 22,
+                child: Text(
+                  _inventoryManager.getItemLabelByIndex(index),
+                  style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'PixelifySans'),
+                  textAlign: TextAlign.center,
                 ),
               ),
-
-            // IconButton for the original icon background (gameboy, card, etc.)
-            IconButton(
-              icon: Image.asset(
-                _getRandomImage(index),
-                width: 100,
-                height: 100,
-                fit: BoxFit.contain, 
-              ),
-              iconSize: 100, 
-              onPressed: () {
-                setState(() {
-                  value = _inventoryManager.inventoryItems[index]; 
-                });
-                _pc.open(); 
-              },
-            ),
-          Positioned(
-          bottom: 22, 
-          child: Text(
-            _inventoryManager.inventoryItems[index],
-            style: const TextStyle(
-              fontSize: 13, 
-              color: Colors.white, 
-              fontWeight: FontWeight.bold, 
-            ),
-            textAlign: TextAlign.center, 
+            ],
           ),
-        ),
-          ],
-        ),     
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   // add an empty item to fill up space in the row
   Widget _buildEmptyItem() {

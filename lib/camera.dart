@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'inventory.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'image_preview.dart';
 import 'inventory_manager.dart';
-import 'inventory.dart';
 import 'byte.dart';
 import 'dart:convert'; // For decoding JSON
 import 'package:http/http.dart' as http;
@@ -50,6 +50,48 @@ Future<CleanData> createCleanData(String payload) async {
   }
 }
 
+Future<List<Nutrient>> createPopulatedNutrients(String payload) async {
+  final response = await http.post(
+    Uri.parse('http://10.37.100.33:3000/api/populate-nutrients'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'payload': payload,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return List<Nutrient>.from(
+        jsonDecode(jsonDecode(response.body)['response']['text'])
+            .map((x) => Nutrient.fromJson(x)));
+  } else {
+    print(response.body);
+    throw Exception('Failed to create product');
+  }
+}
+
+Future<List<Ingredient>> createPopulatedIngredients(String payload) async {
+  final response = await http.post(
+    Uri.parse('http://10.37.100.33:3000/api/populate-ingredients'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'payload': payload,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return List<Ingredient>.from(
+        jsonDecode(jsonDecode(response.body)['response']['text'])
+            .map((x) => Ingredient.fromJson(x)));
+  } else {
+    print(response.body);
+    throw Exception('Failed to create product');
+  }
+}
+
 class Camera extends StatefulWidget {
   const Camera({super.key});
 
@@ -60,17 +102,24 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   late TextRecognizer textRecognizer;
   late ImagePicker imagePicker;
-  Future<Meta>? futureMeta;
-  Future<CleanData>? futureCleanData;
+  Meta meta = Meta(label: "", name: "", description: "");
+  Product product =
+      Product(label: "", name: "", description: "", nutrients: [], ingredients: []);
   String recognizedText = "";
   String recognizedNutrientText = "";
   String recognizedIngredientText = "";
 
-  List<String?> pickedImagePaths = List.filled(3, null); // Store images for each step
-  List<bool> stepsCompleted = [false, false, false]; // Tracks whether each step is done or skipped
+  List<String?> pickedImagePaths =
+      List.filled(3, null); // Store images for each step
+  List<bool> stepsCompleted = [
+    false,
+    false,
+    false
+  ]; // Tracks whether each step is done or skipped
 
   bool isRecognizing = false;
-  int currentStep = 0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Meta picture)
+  int currentStep =
+      0; // Track the current step (0: Nutritional label, 1: Ingredients, 2: Product picture)
 
   @override
   void initState() {
@@ -106,12 +155,10 @@ class _CameraState extends State<Camera> {
 
       switch (currentStep) {
         case 0:
+          Meta m = await createMeta(recognizedText);
           setState(() {
-            futureMeta = createMeta(recognizedText);
+            meta = m;
           });
-          Meta product = await futureMeta!;
-          print(product.name);
-          print(product.description);
           break;
         case 1:
           setState(() {
@@ -119,14 +166,19 @@ class _CameraState extends State<Camera> {
           });
           break;
         case 2:
+          final results = await Future.wait([
+            createPopulatedNutrients(recognizedNutrientText),
+            createPopulatedIngredients(recognizedText)
+          ]);
+          Product p = Product(
+              label: meta.label,
+              name: meta.name,
+              description: meta.description,
+              nutrients: results[0] as List<Nutrient>,
+              ingredients: results[1] as List<Ingredient>);
           setState(() {
-            futureCleanData =
-                createCleanData(recognizedNutrientText + recognizedText);
+            product = p;
           });
-          CleanData product = await futureCleanData!;
-          print(product.weight);
-          print(product.nutrients);
-          print(product.ingredients);
           break;
       }
     } catch (e) {
@@ -153,17 +205,17 @@ class _CameraState extends State<Camera> {
 
   bool get isAllStepsCompleted => stepsCompleted.every((step) => step);
 
-  void _goToInventory() async {
+  void _goToInventory(data) async {
     // Show popup to enter product name
     final productName = await showDialog<String>(
       context: context,
       builder: (context) {
-        String name = '';
+        String name = product.name;
         return AlertDialog(
-          title: const Text('Enter Meta Name'),
+          title: const Text('Enter Product Name'),
           content: TextField(
             autofocus: true,
-            decoration: const InputDecoration(hintText: 'Meta Name'),
+            decoration: InputDecoration(hintText: product.name),
             onChanged: (value) => name = value,
           ),
           actions: [
@@ -185,7 +237,7 @@ class _CameraState extends State<Camera> {
       final inventoryManager = InventoryManager();
       String? imagePath = pickedImagePaths[2];
       if (imagePath != null) {
-        inventoryManager.addItem(productName, imagePath);
+        inventoryManager.addItem(productName, data.toJson(), imagePath);
       }
 
       Navigator.pushReplacement(
@@ -253,7 +305,9 @@ class _CameraState extends State<Camera> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ML Text Recognition'),
@@ -341,13 +395,14 @@ class _CameraState extends State<Camera> {
                   ],
                 ),
               ElevatedButton(
-                onPressed: isAllStepsCompleted ? _goToInventory : null,
+                onPressed: isAllStepsCompleted ? () => _goToInventory(product) : null,
                 child: const Text('Add to Inventory'),
               ),
               if (!isRecognizing && recognizedText.isNotEmpty) ...[
                 const Divider(),
                 Padding(
-                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                  padding:
+                      const EdgeInsets.only(left: 16, right: 16, bottom: 16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -2,10 +2,12 @@ import 'dart:convert';
 
 
 class Meta {
+  String label;
   String name;
   String description;
 
   Meta({
+    required this.label,
     required this.name,
     required this.description,
   });
@@ -14,6 +16,7 @@ class Meta {
   factory Meta.fromJson(Map<String, dynamic> json) {
     dynamic response = jsonDecode(json['response']['text']);
     return Meta(
+      label: response['label'],
       name: response['name'],
       description: response['description'],
     );
@@ -22,6 +25,7 @@ class Meta {
   // Convert Meta to JSON
   Map<String, dynamic> toJson() {
     return {
+      'label': label,
       'name': name,
       'description': description,
     };
@@ -86,16 +90,16 @@ class BasicNutrient {
 }
 
 class Product {
+  String label;
   String name;
   String description;
-  String weight;
   List<Nutrient> nutrients;
   List<Ingredient> ingredients;
 
   Product({
+    required this.label,
     required this.name,
     required this.description,
-    required this.weight,
     required this.nutrients,
     required this.ingredients,
   });
@@ -103,9 +107,9 @@ class Product {
   // Factory constructor to create Product from JSON
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
+      label: json['label'],
       name: json['name'],
       description: json['description'],
-      weight: json['weight'],
       nutrients: List<Nutrient>.from(json['nutrients'].map((x) => Nutrient.fromJson(x))),
       ingredients: List<Ingredient>.from(json['ingredients'].map((x) => Ingredient.fromJson(x))),
     );
@@ -114,9 +118,9 @@ class Product {
   // Convert Product to JSON
   Map<String, dynamic> toJson() {
     return {
+      'label': label,
       'name': name,
       'description': description,
-      'weight': weight,
       'nutrients': nutrients.map((x) => x.toJson()).toList(),
       'ingredients': ingredients.map((x) => x.toJson()).toList(),
     };
