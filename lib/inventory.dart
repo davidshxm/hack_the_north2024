@@ -40,7 +40,8 @@ class _InventoryPage extends State<Inventory> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("SlidingUpPanelExample"),
+        title: Text("Inventory"),
+        backgroundColor: Colors.green,
       ),
       body: SlidingUpPanel(
         controller: _pc,
@@ -147,6 +148,38 @@ class _InventoryPage extends State<Inventory> {
                     },
                   ),
                 ),
+                ],
+              ),
+              Column(
+                children: [
+                  if(!isNull)
+                  for (int index = 0; index < product['ingredients'].length; index++)
+                  Container(
+                    width: double.infinity,
+                      height: 50,
+                      child: 
+                  
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                            context, MaterialPageRoute(builder: (context) => ChatBot(prompt: "Tell me more about ${product['ingredients'][index]['name']}")));
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
+                        children: [
+                          Text(product['ingredients'][index]['name'],
+                            style: TextStyle(fontWeight: FontWeight.bold), // Ingredient name
+                          ),
+                          SizedBox(height: 5), // Space between lines
+                          Text(product['ingredients'][index]['value'].toString(), // Ingredient description
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
             ],
           ),
         ),
