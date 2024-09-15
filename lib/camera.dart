@@ -104,10 +104,16 @@ class _CameraState extends State<Camera> {
   late ImagePicker imagePicker;
   Meta meta = Meta(label: "", name: "", description: "");
   Product product = Product(
-      label: "", name: "", description: "", nutrients: [], ingredients: []);
+      label: "",
+      name: "",
+      description: "",
+      imagePath: "",
+      nutrients: [],
+      ingredients: []);
   String recognizedText = "";
   String recognizedNutrientText = "";
   String recognizedIngredientText = "";
+  String firstImagePath = "";
 
   List<String?> pickedImagePaths =
       List.filled(3, null); // Store images for each step
@@ -137,7 +143,6 @@ class _CameraState extends State<Camera> {
 
     setState(() {
       pickedImagePaths[currentStep] = pickedImage.path;
-      stepsCompleted[currentStep] = true;
       isRecognizing = true;
     });
 
@@ -158,6 +163,7 @@ class _CameraState extends State<Camera> {
           Meta m = await createMeta(recognizedText);
           setState(() {
             meta = m;
+            firstImagePath = pickedImage.path;
           });
           break;
         case 1:
@@ -174,6 +180,7 @@ class _CameraState extends State<Camera> {
               label: meta.label,
               name: meta.name,
               description: meta.description,
+              imagePath: pickedImage.path,
               nutrients: results[0] as List<Nutrient>,
               ingredients: results[1] as List<Ingredient>);
           setState(() {
@@ -196,14 +203,12 @@ class _CameraState extends State<Camera> {
 
   void _skipCurrentStep() {
     setState(() {
-      stepsCompleted[currentStep] = true; // Mark step as completed (skipped)
+      stepsCompleted[currentStep] = false; // Mark step as completed (skipped)
       if (currentStep < 2) {
         currentStep++;
       }
     });
   }
-
-  bool get isAllStepsCompleted => stepsCompleted.every((step) => step);
 
   void _goToInventory(data) async {
     // Show popup to enter product name
@@ -213,10 +218,20 @@ class _CameraState extends State<Camera> {
         String name = product.name;
         return AlertDialog(
           title: const Text('Enter Product Name'),
-          content: TextField(
-            autofocus: true,
-            decoration: InputDecoration(hintText: product.name),
-            onChanged: (value) => name = value,
+          content: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    autofocus: true,
+                    decoration: InputDecoration(hintText: product.name),
+                    onChanged: (value) => name = value,
+                  ),
+                ],
+              ),
+            ),
           ),
           actions: [
             TextButton(

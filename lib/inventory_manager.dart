@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'dart:convert';
+import 'image_preview.dart';
 
 class InventoryManager {
   InventoryManager._privateConstructor() {
