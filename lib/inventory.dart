@@ -35,13 +35,12 @@ class _InventoryPage extends State<Inventory> {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> product =
-    _inventoryManager.getEntryByName(_inventoryManager.getItemNameByIndex(Index));
+    Map<String, dynamic> product = _inventoryManager
+        .getEntryByName(_inventoryManager.getItemNameByIndex(Index));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Inventory"),
-        backgroundColor: Colors.green,
+        title: Text("SlidingUpPanelExample"),
       ),
       body: SlidingUpPanel(
         controller: _pc,
@@ -58,8 +57,8 @@ class _InventoryPage extends State<Inventory> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (context) => ChatBot()));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => ChatBot()));
                   },
                   child: Text(product['name'] ?? ""),
                 ),
@@ -71,20 +70,22 @@ class _InventoryPage extends State<Inventory> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (context) => ChatBot()));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => ChatBot()));
                   },
                   child: Text(product['description'] ?? ""),
                 ),
               ),
-              if (product['nutrients'] != null && product['nutrients'].isNotEmpty)
+              if (product['nutrients'] != null &&
+                  product['nutrients'].isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: DropdownButton<String>(
                     hint: Text('Select a Nutrient'),
                     value: selectedNutrient,
                     isExpanded: true,
-                    items: product['nutrients'].map<DropdownMenuItem<String>>((nutrient) {
+                    items: product['nutrients']
+                        .map<DropdownMenuItem<String>>((nutrient) {
                       String name = nutrient['name'];
                       String value = nutrient['value'].toString();
                       return DropdownMenuItem<String>(
@@ -92,7 +93,8 @@ class _InventoryPage extends State<Inventory> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(name,
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                             Text(value),
                           ],
                         ),
@@ -104,7 +106,8 @@ class _InventoryPage extends State<Inventory> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ChatBot(prompt: "Tell me more about $newValue"),
+                            builder: (context) =>
+                                ChatBot(prompt: "Tell me more about $newValue"),
                           ),
                         );
                       });
@@ -112,14 +115,16 @@ class _InventoryPage extends State<Inventory> {
                   ),
                 ),
               // Dropdown to select nutrients with name and value side by side
-              if (product['ingredients'] != null && product['ingredients'].isNotEmpty)
+              if (product['ingredients'] != null &&
+                  product['ingredients'].isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: DropdownButton<String>(
                     hint: Text('Select an Ingredient'),
                     value: selectedNutrient,
                     isExpanded: true,
-                    items: product['ingredients'].map<DropdownMenuItem<String>>((nutrient) {
+                    items: product['ingredients']
+                        .map<DropdownMenuItem<String>>((nutrient) {
                       String name = nutrient['name'];
                       String description = nutrient['description'];
                       String rating = nutrient['rating'].toString();
@@ -128,7 +133,8 @@ class _InventoryPage extends State<Inventory> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text(name,
+                                style: TextStyle(fontWeight: FontWeight.bold)),
                             Text(description),
                             Text(rating)
                           ],
@@ -141,45 +147,14 @@ class _InventoryPage extends State<Inventory> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ChatBot(prompt: "Tell me more about $newValue"),
+                            builder: (context) =>
+                                ChatBot(prompt: "Tell me more about $newValue"),
                           ),
                         );
                       });
                     },
                   ),
                 ),
-                ],
-              ),
-              Column(
-                children: [
-                  if(!isNull)
-                  for (int index = 0; index < product['ingredients'].length; index++)
-                  Container(
-                    width: double.infinity,
-                      height: 50,
-                      child: 
-                  
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                            context, MaterialPageRoute(builder: (context) => ChatBot(prompt: "Tell me more about ${product['ingredients'][index]['name']}")));
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
-                        children: [
-                          Text(product['ingredients'][index]['name'],
-                            style: TextStyle(fontWeight: FontWeight.bold), // Ingredient name
-                          ),
-                          SizedBox(height: 5), // Space between lines
-                          Text(product['ingredients'][index]['value'].toString(), // Ingredient description
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
             ],
           ),
         ),
@@ -198,21 +173,21 @@ class _InventoryPage extends State<Inventory> {
       floatingActionButton: _isPanelVisible
           ? null
           : FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Camera(),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Camera(),
+                  ),
+                );
+              },
+              child: Image.asset('assets/PlusButton.png'),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(60),
+              ),
+              backgroundColor: Colors.transparent,
             ),
-          );
-        },
-        child: Image.asset('assets/PlusButton.png'),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(60),
-        ),
-        backgroundColor: Colors.transparent,
-      ),
     );
   }
 
@@ -239,7 +214,7 @@ class _InventoryPage extends State<Inventory> {
                     itemBuilder: (context, rowIndex) {
                       int startIndex = rowIndex * 3;
                       int endIndex =
-                      min(startIndex + 3, _inventoryManager.getItemCount());
+                          min(startIndex + 3, _inventoryManager.getItemCount());
 
                       return Column(
                         children: [
