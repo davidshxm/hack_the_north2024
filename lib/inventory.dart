@@ -338,21 +338,22 @@ class _InventoryPage extends State<Inventory> {
   }
 
   Widget _buildInventoryItem(int index) {
+    Map<String, dynamic> product = _inventoryManager
+        .getEntryByName(_inventoryManager.getItemNameByIndex(index));
     return Expanded(
       child: Column(
         children: [
           Stack(
             alignment: Alignment.center,
             children: [
-              if (_inventoryManager.inventoryImages.length > index &&
-                  _inventoryManager.inventoryImages[index].isNotEmpty)
+              if (product != null && product['imagePath'] != null)
                 Positioned(
                   top: 10,
                   left: 10,
                   right: 10,
                   bottom: 10,
                   child: Image.file(
-                    File(_inventoryManager.inventoryImages[index]),
+                    File(product['imagePath']),
                     width: 100,
                     height: 100,
                     fit: BoxFit.contain,
