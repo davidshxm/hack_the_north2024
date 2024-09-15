@@ -213,10 +213,20 @@ class _CameraState extends State<Camera> {
         String name = product.name;
         return AlertDialog(
           title: const Text('Enter Product Name'),
-          content: TextField(
-            autofocus: true,
-            decoration: InputDecoration(hintText: product.name),
-            onChanged: (value) => name = value,
+          content: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    autofocus: true,
+                    decoration: InputDecoration(hintText: product.name),
+                    onChanged: (value) => name = value,
+                  ),
+                ],
+              ),
+            ),
           ),
           actions: [
             TextButton(
