@@ -80,7 +80,7 @@ class _InventoryPage extends State<Inventory> {
         backdropEnabled: true,
         // For a backdrop when the panel is opened
         renderPanelSheet: true,
-        maxHeight: MediaQuery.of(context).size.height,
+        maxHeight: MediaQuery.of(context).size.height-200,
         // Full screen height
         minHeight: 0,
         // Hide the panel when collapsed
