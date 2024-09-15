@@ -72,7 +72,8 @@ class _InventoryPage extends State<Inventory> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("SlidingUpPanelExample"),
+        title: Text("Inventory"),
+        backgroundColor: Colors.green[400],
       ),
       body: SlidingUpPanel(
         controller: _pc,
@@ -87,13 +88,27 @@ class _InventoryPage extends State<Inventory> {
           child: Column(
             children: [
               // Product name button
-              Container(
-                child: Text(product['name'] ?? ""),
+              SizedBox(
+                height: 20,
               ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Container(
+                width: double.infinity,
+                child: Text(product['name'] ?? "",
+                    style: TextStyle(fontWeight: FontWeight.bold,
+                      fontSize: 20,)),
+                    ),),
               // Product description button
-              Container(
-                child: Text(product['description'] ?? ""),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                child: Container(
+                child: Text(product['description'] ?? "",
+                    style: TextStyle(fontWeight: FontWeight.bold,
+                      fontSize: 15,)),
               ),
+              ),
+              
               if (product['nutrients'] != null &&
                   product['nutrients'].isNotEmpty)
                   DropdownButton<String>(

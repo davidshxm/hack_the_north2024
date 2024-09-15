@@ -93,6 +93,7 @@ class Product {
   String label;
   String name;
   String description;
+  String imagePath;
   List<Nutrient> nutrients;
   List<Ingredient> ingredients;
 
@@ -100,6 +101,7 @@ class Product {
     required this.label,
     required this.name,
     required this.description,
+    required this.imagePath,
     required this.nutrients,
     required this.ingredients,
   });
@@ -110,6 +112,7 @@ class Product {
       label: json['label'],
       name: json['name'],
       description: json['description'],
+      imagePath: json['imagePath'],
       nutrients: List<Nutrient>.from(json['nutrients'].map((x) => Nutrient.fromJson(x))),
       ingredients: List<Ingredient>.from(json['ingredients'].map((x) => Ingredient.fromJson(x))),
     );
@@ -121,6 +124,7 @@ class Product {
       'label': label,
       'name': name,
       'description': description,
+      'imagePath': imagePath,
       'nutrients': nutrients.map((x) => x.toJson()).toList(),
       'ingredients': ingredients.map((x) => x.toJson()).toList(),
     };

@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'dart:convert';
+import 'image_preview.dart';
 
 class InventoryManager {
   InventoryManager._privateConstructor() {
@@ -39,6 +41,15 @@ class InventoryManager {
 
   int getItemCount() {
     return _inventoryMap.length;
+  }
+
+  dynamic getItemImageByIndex(int index) {
+    if (index < 0 || index >= _inventoryMap.length) {
+      return "";
+    }
+    final String imagePath = _inventoryMap[index]['imagePath'];
+    final inputImage = InputImage.fromFilePath(imagePath);
+    return inputImage;
   }
 
   String getItemNameByIndex(int index) {

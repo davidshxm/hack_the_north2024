@@ -104,10 +104,11 @@ class _CameraState extends State<Camera> {
   late ImagePicker imagePicker;
   Meta meta = Meta(label: "", name: "", description: "");
   Product product =
-      Product(label: "", name: "", description: "", nutrients: [], ingredients: []);
+      Product(label: "", name: "", description: "", imagePath: "", nutrients: [], ingredients: []);
   String recognizedText = "";
   String recognizedNutrientText = "";
   String recognizedIngredientText = "";
+  String firstImagePath = "";
 
   List<String?> pickedImagePaths =
       List.filled(3, null); // Store images for each step
@@ -158,6 +159,7 @@ class _CameraState extends State<Camera> {
           Meta m = await createMeta(recognizedText);
           setState(() {
             meta = m;
+            firstImagePath = pickedImage.path;
           });
           break;
         case 1:
@@ -174,6 +176,7 @@ class _CameraState extends State<Camera> {
               label: meta.label,
               name: meta.name,
               description: meta.description,
+              imagePath: pickedImage.path,
               nutrients: results[0] as List<Nutrient>,
               ingredients: results[1] as List<Ingredient>);
           setState(() {
