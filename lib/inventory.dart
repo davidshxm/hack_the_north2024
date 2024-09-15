@@ -49,7 +49,8 @@ class _InventoryPage extends State<Inventory> {
     // dev.log(jsonEncode(product));
     return Scaffold(
       appBar: AppBar(
-        title: Text("SlidingUpPanelExample"),
+        title: Text("Inventory"),
+        backgroundColor: Colors.green,
       ),
       body: SlidingUpPanel(
         renderPanelSheet: _isPanelVisible,
