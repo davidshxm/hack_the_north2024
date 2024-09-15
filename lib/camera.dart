@@ -8,6 +8,7 @@ import 'inventory_manager.dart';
 import 'byte.dart';
 import 'dart:convert'; // For decoding JSON
 import 'package:http/http.dart' as http;
+import 'dart:developer';
 
 Future<Meta> createMeta(String payload) async {
   final response = await http.post(
@@ -168,6 +169,7 @@ class _CameraState extends State<Camera> {
               description: meta.description,
               nutrients: results[0] as List<Nutrient>,
               ingredients: results[1] as List<Ingredient>);
+          log(jsonEncode(p.toJson()));
           setState(() {
             product = p;
           });
@@ -286,7 +288,7 @@ class _CameraState extends State<Camera> {
   String _getStepDescription(int step) {
     switch (step) {
       case 0:
-        return "Step 3: Capture a photo of the product. This image will be used to identify and verify the product.";
+        return "Step 1: Capture a photo of the product. This image will be used to identify and verify the product.";
       case 1:
         return "Step 2: Capture the Nutritional Label of the product. This label provides information about the nutrients present in the product.";
       case 2:
